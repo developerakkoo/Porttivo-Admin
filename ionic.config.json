@@ -1,0 +1,7 @@
+{
+  "name": "porttivoadmin",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
