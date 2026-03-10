@@ -1,0 +1,22 @@
+.alert-section, .calculation-card {
+  margin: 16px;
+}
+
+.calculation-card {
+  background: var(--ion-color-light);
+  border: 1px solid var(--ion-border-color);
+}
+
+.loading-container, .empty-state {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  color: var(--ion-color-medium);
+}
+
+.empty-state ion-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+}

@@ -1,0 +1,44 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Trips</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<div class="ion-page" id="main-content">
+<ion-content [fullscreen]="true">
+  <div class="filter-bar">
+    <ion-select [(ngModel)]="filters.status" (ionChange)="loadTrips()" placeholder="All Status">
+      <ion-select-option value="">All Status</ion-select-option>
+      <ion-select-option value="PLANNED">Planned</ion-select-option>
+      <ion-select-option value="ACTIVE">Active</ion-select-option>
+      <ion-select-option value="COMPLETED">Completed</ion-select-option>
+      <ion-select-option value="CANCELLED">Cancelled</ion-select-option>
+    </ion-select>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <ion-list *ngIf="!loading && trips.length > 0">
+    <ion-item *ngFor="let trip of trips">
+      <ion-label>
+        <h2>{{ trip.tripId }}</h2>
+        <p>{{ trip.containerNumber }} • {{ trip.reference }}</p>
+        <p>{{ trip.transporterId?.name || trip.transporterId }} • {{ trip.status }}</p>
+      </ion-label>
+      <ion-button slot="end" fill="clear" (click)="cancelTrip(trip.id)" *ngIf="trip.status !== 'CANCELLED'">
+        <ion-icon name="close-circle"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </ion-list>
+
+  <div *ngIf="!loading && trips.length === 0" class="empty-state">
+    <ion-icon name="map-outline"></ion-icon>
+    <p>No trips found</p>
+  </div>
+</ion-content>
+</div>

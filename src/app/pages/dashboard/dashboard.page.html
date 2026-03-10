@@ -1,0 +1,115 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Dashboard</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="refresh()">
+        <ion-icon name="refresh"></ion-icon>
+      </ion-button>
+      <ion-button (click)="logout()">
+        <ion-icon name="log-out"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<div class="ion-page" id="main-content">
+<ion-content [fullscreen]="true">
+  <div class="dashboard-container">
+    <div class="welcome-section" *ngIf="currentAdmin">
+      <h2>Welcome, {{ currentAdmin.username }}</h2>
+      <p>Here's what's happening in your system</p>
+    </div>
+
+    <div *ngIf="loading" class="loading-container">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Loading dashboard...</p>
+    </div>
+
+    <div *ngIf="!loading && stats" class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <ion-icon name="people"></ion-icon>
+        </div>
+        <div class="stat-value">{{ stats.totalTransporters }}</div>
+        <div class="stat-label">Total Transporters</div>
+        <div class="stat-sublabel">{{ stats.activeTransporters }} active</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">
+          <ion-icon name="car"></ion-icon>
+        </div>
+        <div class="stat-value">{{ stats.totalDrivers }}</div>
+        <div class="stat-label">Total Drivers</div>
+        <div class="stat-sublabel">{{ stats.activeDrivers }} active</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">
+          <ion-icon name="bus"></ion-icon>
+        </div>
+        <div class="stat-value">{{ stats.totalVehicles }}</div>
+        <div class="stat-label">Total Vehicles</div>
+        <div class="stat-sublabel">{{ stats.activeVehicles }} active</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">
+          <ion-icon name="map"></ion-icon>
+        </div>
+        <div class="stat-value">{{ stats.totalTrips }}</div>
+        <div class="stat-label">Total Trips</div>
+        <div class="stat-sublabel">{{ stats.activeTrips }} active</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">
+          <ion-icon name="flame"></ion-icon>
+        </div>
+        <div class="stat-value">₹{{ formatNumber(stats.totalFuelValue) }}</div>
+        <div class="stat-label">Total Fuel Value</div>
+        <div class="stat-sublabel">₹{{ formatNumber(stats.todayFuelValue) }} today</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">
+          <ion-icon name="storefront"></ion-icon>
+        </div>
+        <div class="stat-value">{{ stats.totalPumpOwners }}</div>
+        <div class="stat-label">Pump Owners</div>
+        <div class="stat-sublabel">{{ stats.activePumpOwners }} active</div>
+      </div>
+
+      <div class="stat-card alert-card" *ngIf="stats.pendingSettlements > 0">
+        <div class="stat-icon">
+          <ion-icon name="cash"></ion-icon>
+        </div>
+        <div class="stat-value">{{ stats.pendingSettlements }}</div>
+        <div class="stat-label">Pending Settlements</div>
+        <div class="stat-sublabel">Requires attention</div>
+      </div>
+
+      <div class="stat-card alert-card" *ngIf="stats.pendingFraudAlerts > 0">
+        <div class="stat-icon">
+          <ion-icon name="warning"></ion-icon>
+        </div>
+        <div class="stat-value">{{ stats.pendingFraudAlerts }}</div>
+        <div class="stat-label">Fraud Alerts</div>
+        <div class="stat-sublabel">Needs review</div>
+      </div>
+
+      <div class="stat-card alert-card" *ngIf="stats.expiringDocuments > 0">
+        <div class="stat-icon">
+          <ion-icon name="document"></ion-icon>
+        </div>
+        <div class="stat-value">{{ stats.expiringDocuments }}</div>
+        <div class="stat-label">Expiring Documents</div>
+        <div class="stat-sublabel">Within 30 days</div>
+      </div>
+    </div>
+  </div>
+</ion-content>
+</div>

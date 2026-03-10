@@ -1,0 +1,185 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>User Management</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<div class="ion-page" id="main-content">
+<ion-content [fullscreen]="true">
+  <ion-segment [(ngModel)]="selectedTab" (ionChange)="segmentChanged($event)" value="transporters">
+    <ion-segment-button value="transporters">
+      <ion-label>Transporters</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="drivers">
+      <ion-label>Drivers</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="pumpOwners">
+      <ion-label>Pump Owners</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="pumpStaff">
+      <ion-label>Pump Staff</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="companyUsers">
+      <ion-label>Company Users</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <div class="filter-bar">
+    <ion-searchbar
+      *ngIf="selectedTab === 'transporters'"
+      [(ngModel)]="filters.transporters.search"
+      (ionInput)="onFilterChange()"
+      placeholder="Search transporters...">
+    </ion-searchbar>
+    <ion-select
+      [(ngModel)]="filters[selectedTab].status"
+      (ionChange)="onFilterChange()"
+      placeholder="All Status"
+      interface="popover">
+      <ion-select-option value="">All Status</ion-select-option>
+      <ion-select-option value="active">Active</ion-select-option>
+      <ion-select-option value="inactive">Inactive</ion-select-option>
+      <ion-select-option value="blocked">Blocked</ion-select-option>
+      <ion-select-option value="pending" *ngIf="selectedTab === 'transporters' || selectedTab === 'pumpOwners'">Pending</ion-select-option>
+    </ion-select>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <!-- Transporters List -->
+  <div *ngIf="!loading && selectedTab === 'transporters'">
+    <ion-list *ngIf="transporters.length > 0">
+      <ion-item *ngFor="let transporter of transporters" button (click)="viewDetails(transporter.id, 'transporter')">
+        <ion-label>
+          <h2>{{ transporter.name }}</h2>
+          <p>{{ transporter.company }} • {{ transporter.mobile }}</p>
+          <p *ngIf="transporter.email">{{ transporter.email }}</p>
+        </ion-label>
+        <ion-badge [class]="getStatusClass(transporter.status)" slot="end">
+          {{ transporter.status }}
+        </ion-badge>
+        <ion-button
+          slot="end"
+          fill="clear"
+          (click)="updateStatus(transporter.id, transporter.status, 'transporter'); $event.stopPropagation()">
+          <ion-icon name="settings"></ion-icon>
+        </ion-button>
+      </ion-item>
+    </ion-list>
+    <div *ngIf="transporters.length === 0" class="empty-state">
+      <ion-icon name="people-outline"></ion-icon>
+      <p>No transporters found</p>
+    </div>
+    <ion-footer *ngIf="transportersPagination.pages > 1">
+      <ion-toolbar>
+        <ion-buttons>
+          <ion-button (click)="goToPage(transportersPagination.page - 1)" [disabled]="transportersPagination.page === 1">
+            Previous
+          </ion-button>
+          <ion-label>Page {{ transportersPagination.page }} of {{ transportersPagination.pages }}</ion-label>
+          <ion-button (click)="goToPage(transportersPagination.page + 1)" [disabled]="transportersPagination.page === transportersPagination.pages">
+            Next
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-footer>
+  </div>
+
+  <!-- Drivers List -->
+  <div *ngIf="!loading && selectedTab === 'drivers'">
+    <ion-list *ngIf="drivers.length > 0">
+      <ion-item *ngFor="let driver of drivers" button (click)="viewDetails(driver.id, 'driver')">
+        <ion-label>
+          <h2>{{ driver.name }}</h2>
+          <p>{{ driver.transporter?.company || driver.transporterId }} • {{ driver.mobile }}</p>
+          <p>Risk: {{ driver.riskLevel }} • Trips: {{ driver.totalTrips || 0 }}</p>
+        </ion-label>
+        <ion-badge [class]="getStatusClass(driver.status)" slot="end">
+          {{ driver.status }}
+        </ion-badge>
+        <ion-button
+          slot="end"
+          fill="clear"
+          (click)="updateStatus(driver.id, driver.status, 'driver'); $event.stopPropagation()">
+          <ion-icon name="settings"></ion-icon>
+        </ion-button>
+      </ion-item>
+    </ion-list>
+    <div *ngIf="drivers.length === 0" class="empty-state">
+      <ion-icon name="car-outline"></ion-icon>
+      <p>No drivers found</p>
+    </div>
+  </div>
+
+  <!-- Pump Owners List -->
+  <div *ngIf="!loading && selectedTab === 'pumpOwners'">
+    <ion-list *ngIf="pumpOwners.length > 0">
+      <ion-item *ngFor="let owner of pumpOwners" button (click)="viewDetails(owner.id, 'pumpOwner')">
+        <ion-label>
+          <h2>{{ owner.name }}</h2>
+          <p>{{ owner.pumpName }} • {{ owner.mobile }}</p>
+          <p>Commission: {{ owner.commissionRate }}% • Fuel Value: ₹{{ formatNumber(owner.totalFuelValue || 0) }}</p>
+        </ion-label>
+        <ion-badge [class]="getStatusClass(owner.status)" slot="end">
+          {{ owner.status }}
+        </ion-badge>
+        <ion-button
+          slot="end"
+          fill="clear"
+          (click)="updateStatus(owner.id, owner.status, 'pumpOwner'); $event.stopPropagation()">
+          <ion-icon name="settings"></ion-icon>
+        </ion-button>
+      </ion-item>
+    </ion-list>
+    <div *ngIf="pumpOwners.length === 0" class="empty-state">
+      <ion-icon name="storefront-outline"></ion-icon>
+      <p>No pump owners found</p>
+    </div>
+  </div>
+
+  <!-- Pump Staff List -->
+  <div *ngIf="!loading && selectedTab === 'pumpStaff'">
+    <ion-list *ngIf="pumpStaff.length > 0">
+      <ion-item *ngFor="let staff of pumpStaff" button (click)="viewDetails(staff.id, 'pumpStaff')">
+        <ion-label>
+          <h2>{{ staff.name }}</h2>
+          <p>{{ staff.pumpOwner?.pumpName || staff.pumpOwnerId }} • {{ staff.mobile }}</p>
+          <p>Transactions: {{ staff.totalTransactions || 0 }}</p>
+        </ion-label>
+        <ion-badge [class]="getStatusClass(staff.status)" slot="end">
+          {{ staff.status }}
+        </ion-badge>
+      </ion-item>
+    </ion-list>
+    <div *ngIf="pumpStaff.length === 0" class="empty-state">
+      <ion-icon name="person-outline"></ion-icon>
+      <p>No pump staff found</p>
+    </div>
+  </div>
+
+  <!-- Company Users List -->
+  <div *ngIf="!loading && selectedTab === 'companyUsers'">
+    <ion-list *ngIf="companyUsers.length > 0">
+      <ion-item *ngFor="let user of companyUsers" button (click)="viewDetails(user.id, 'companyUser')">
+        <ion-label>
+          <h2>{{ user.name }}</h2>
+          <p>{{ user.transporter?.company || user.transporterId }} • {{ user.mobile }}</p>
+          <p *ngIf="user.email">{{ user.email }}</p>
+        </ion-label>
+        <ion-badge [class]="getStatusClass(user.status)" slot="end">
+          {{ user.status }}
+        </ion-badge>
+      </ion-item>
+    </ion-list>
+    <div *ngIf="companyUsers.length === 0" class="empty-state">
+      <ion-icon name="people-outline"></ion-icon>
+      <p>No company users found</p>
+    </div>
+    </div>
+</ion-content>
+</div>

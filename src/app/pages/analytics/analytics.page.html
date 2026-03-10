@@ -1,0 +1,59 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Analytics</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<div class="ion-page" id="main-content">
+<ion-content [fullscreen]="true">
+  <div class="filter-bar">
+    <ion-select [(ngModel)]="type" (ionChange)="onTypeChange()" placeholder="Type">
+      <ion-select-option value="trips">Trips</ion-select-option>
+      <ion-select-option value="fuel">Fuel</ion-select-option>
+      <ion-select-option value="users">Users</ion-select-option>
+      <ion-select-option value="vehicles">Vehicles</ion-select-option>
+    </ion-select>
+    <ion-select [(ngModel)]="groupBy" (ionChange)="onGroupByChange()" placeholder="Group By">
+      <ion-select-option value="day">Day</ion-select-option>
+      <ion-select-option value="week">Week</ion-select-option>
+      <ion-select-option value="month">Month</ion-select-option>
+    </ion-select>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <div *ngIf="!loading && analytics" class="analytics-content">
+    <ion-card *ngIf="analytics.summary">
+      <ion-card-header>
+        <ion-card-title>Summary</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div *ngFor="let key of getSummaryKeys(analytics.summary)" class="summary-item">
+          <strong>{{ key }}:</strong> {{ formatValue(analytics.summary[key]) }}
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Data</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="data-list">
+          <div *ngFor="let item of analytics.data" class="data-item">
+            <strong>{{ item.date }}:</strong>
+            <span *ngFor="let key of getDataKeys(item)" class="data-value">
+              {{ key }}: {{ formatValue(item[key]) }}
+            </span>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
+</div>

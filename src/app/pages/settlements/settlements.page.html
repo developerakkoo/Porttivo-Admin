@@ -1,0 +1,71 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Settlements</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<div class="ion-page" id="main-content">
+<ion-content [fullscreen]="true">
+  <div *ngIf="pendingSettlements.length > 0" class="alert-section">
+    <ion-card color="warning">
+      <ion-card-header>
+        <ion-card-title>Pending Settlements</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>{{ pendingSettlements.length }} settlements pending processing</p>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <ion-card class="calculation-card" *ngIf="calculation">
+    <ion-card-header>
+      <ion-card-title>Settlement Calculation</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p><strong>Fuel Value:</strong> ₹{{ formatNumber(calculation.fuelValue) }}</p>
+      <p><strong>Commission ({{ calculation.commissionRate }}%):</strong> ₹{{ formatNumber(calculation.commission) }}</p>
+      <p><strong>Net Payable:</strong> ₹{{ formatNumber(calculation.netPayable) }}</p>
+      <p><strong>Transactions:</strong> {{ calculation.transactionCount }}</p>
+    </ion-card-content>
+  </ion-card>
+
+  <div *ngIf="loading" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <ion-list *ngIf="!loading && settlements.length > 0">
+    <ion-item *ngFor="let settlement of settlements">
+      <ion-label>
+        <h2>{{ settlement.pumpOwner?.pumpName || settlement.pumpOwner }}</h2>
+        <p>{{ settlement.period }} • ₹{{ formatNumber(settlement.netPayable) }}</p>
+        <p>{{ settlement.transactionCount }} transactions</p>
+      </ion-label>
+      <ion-badge [class]="getStatusClass(settlement.status)" slot="end">
+        {{ settlement.status }}
+      </ion-badge>
+      <ion-button
+        slot="end"
+        fill="clear"
+        (click)="processSettlement(settlement.id)"
+        *ngIf="settlement.status === 'PENDING'">
+        Process
+      </ion-button>
+      <ion-button
+        slot="end"
+        fill="clear"
+        (click)="completeSettlement(settlement.id)"
+        *ngIf="settlement.status === 'PROCESSING'">
+        Complete
+      </ion-button>
+    </ion-item>
+  </ion-list>
+
+  <div *ngIf="!loading && settlements.length === 0" class="empty-state">
+    <ion-icon name="cash-outline"></ion-icon>
+    <p>No settlements found</p>
+  </div>
+</ion-content>
+</div>

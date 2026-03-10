@@ -1,0 +1,60 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Fuel Cards</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="showCreateForm = !showCreateForm">
+        <ion-icon name="add"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<div class="ion-page" id="main-content">
+<ion-content [fullscreen]="true">
+  <ion-card *ngIf="showCreateForm" class="create-card">
+    <ion-card-header>
+      <ion-card-title>Create Fuel Card</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-label position="stacked">Card Number</ion-label>
+        <ion-input [(ngModel)]="newCard.cardNumber" placeholder="FC1234567890"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Transporter ID</ion-label>
+        <ion-input [(ngModel)]="newCard.transporterId" placeholder="transporter-id"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Balance</ion-label>
+        <ion-input type="number" [(ngModel)]="newCard.balance" placeholder="0"></ion-input>
+      </ion-item>
+      <ion-button expand="block" (click)="createFuelCard()">Create</ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <div *ngIf="loading" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <ion-list *ngIf="!loading && cards.length > 0">
+    <ion-item *ngFor="let card of cards">
+      <ion-label>
+        <h2>{{ card.cardNumber }}</h2>
+        <p>{{ card.transporterId?.name || card.transporterId }} • Balance: ₹{{ card.balance }}</p>
+        <p *ngIf="card.driverId">Assigned to: {{ card.driverId?.name || card.driverId }}</p>
+      </ion-label>
+      <ion-badge [class]="card.status === 'active' ? 'status-badge active' : 'status-badge inactive'" slot="end">
+        {{ card.status }}
+      </ion-badge>
+    </ion-item>
+  </ion-list>
+
+  <div *ngIf="!loading && cards.length === 0" class="empty-state">
+    <ion-icon name="card-outline"></ion-icon>
+    <p>No fuel cards found</p>
+  </div>
+</ion-content>
+</div>

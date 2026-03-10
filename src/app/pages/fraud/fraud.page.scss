@@ -1,0 +1,33 @@
+.stats-section {
+  padding: 16px;
+}
+
+.filter-bar {
+  padding: 16px;
+  background: var(--ion-color-light);
+  border-bottom: 1px solid var(--ion-border-color);
+}
+
+.fraud-badge {
+  display: inline-block;
+  background: var(--ion-color-primary);
+  color: var(--ion-color-primary-contrast);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  margin-right: 4px;
+}
+
+.loading-container, .empty-state {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  color: var(--ion-color-medium);
+}
+
+.empty-state ion-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+}

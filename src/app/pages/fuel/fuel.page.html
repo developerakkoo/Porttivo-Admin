@@ -1,0 +1,41 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Fuel Transactions</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<div class="ion-page" id="main-content">
+<ion-content [fullscreen]="true">
+  <div class="filter-bar">
+    <ion-select [(ngModel)]="filters.status" (ionChange)="loadTransactions()" placeholder="All Status">
+      <ion-select-option value="">All Status</ion-select-option>
+      <ion-select-option value="pending">Pending</ion-select-option>
+      <ion-select-option value="completed">Completed</ion-select-option>
+      <ion-select-option value="flagged">Flagged</ion-select-option>
+    </ion-select>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <ion-list *ngIf="!loading && transactions.length > 0">
+    <ion-item *ngFor="let transaction of transactions">
+      <ion-label>
+        <h2>{{ transaction.transactionId }}</h2>
+        <p>₹{{ transaction.amount }} • {{ transaction.status }}</p>
+        <p>{{ transaction.driverId?.name || transaction.driverId }} • {{ transaction.pumpOwnerId?.pumpName || transaction.pumpOwnerId }}</p>
+      </ion-label>
+      <ion-badge *ngIf="transaction.status === 'flagged'" color="danger" slot="end">Fraud</ion-badge>
+    </ion-item>
+  </ion-list>
+
+  <div *ngIf="!loading && transactions.length === 0" class="empty-state">
+    <ion-icon name="flame-outline"></ion-icon>
+    <p>No transactions found</p>
+  </div>
+</ion-content>
+</div>

@@ -1,0 +1,59 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Fraud Detection</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<div class="ion-page" id="main-content">
+<ion-content [fullscreen]="true">
+  <div *ngIf="stats" class="stats-section">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Fraud Statistics</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p><strong>Total Flagged:</strong> {{ stats.totalFlagged }}</p>
+        <p><strong>Pending:</strong> {{ stats.pending }}</p>
+        <p><strong>Resolved:</strong> {{ stats.resolved }}</p>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <div class="filter-bar">
+    <ion-select [(ngModel)]="filters.resolved" (ionChange)="loadFraudAlerts()" placeholder="Filter">
+      <ion-select-option value="">All</ion-select-option>
+      <ion-select-option value="false">Pending</ion-select-option>
+      <ion-select-option value="true">Resolved</ion-select-option>
+    </ion-select>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <ion-list *ngIf="!loading && alerts.length > 0">
+    <ion-item *ngFor="let alert of alerts">
+      <ion-label>
+        <h2>{{ alert.transactionId }}</h2>
+        <p>₹{{ alert.amount }} • {{ alert.driverId?.name || alert.driverId }}</p>
+        <p *ngIf="alert.fraudFlags">
+          <span *ngIf="alert.fraudFlags.duplicateReceipt" class="fraud-badge">Duplicate Receipt</span>
+          <span *ngIf="alert.fraudFlags.gpsMismatch" class="fraud-badge">GPS Mismatch</span>
+          <span *ngIf="alert.fraudFlags.expressUploads" class="fraud-badge">Express Uploads</span>
+        </p>
+      </ion-label>
+      <ion-button slot="end" fill="clear" (click)="resolveAlert(alert.id)" *ngIf="!alert.fraudFlags?.resolved">
+        Resolve
+      </ion-button>
+    </ion-item>
+  </ion-list>
+
+  <div *ngIf="!loading && alerts.length === 0" class="empty-state">
+    <ion-icon name="shield-checkmark-outline"></ion-icon>
+    <p>No fraud alerts found</p>
+  </div>
+</ion-content>
+</div>

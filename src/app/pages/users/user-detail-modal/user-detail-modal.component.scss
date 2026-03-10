@@ -1,0 +1,35 @@
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.user-details {
+  padding: 16px;
+
+  ion-list {
+    background: transparent;
+  }
+
+  ion-item {
+    --background: var(--ion-card-background);
+    margin-bottom: 8px;
+    border-radius: 4px;
+    border: 1px solid var(--ion-border-color);
+
+    h2 {
+      font-weight: 600;
+      color: var(--ion-text-color);
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    p {
+      color: var(--ion-text-color);
+      font-size: 1rem;
+      margin: 4px 0 0 0;
+    }
+  }
+}

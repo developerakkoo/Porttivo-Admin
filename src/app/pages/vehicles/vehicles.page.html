@@ -1,0 +1,41 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Vehicles</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<div class="ion-page" id="main-content">
+<ion-content [fullscreen]="true">
+  <div *ngIf="expiringDocuments.length > 0" class="alert-section">
+    <ion-card color="warning">
+      <ion-card-header>
+        <ion-card-title>Expiring Documents</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>{{ expiringDocuments.length }} documents expiring soon</p>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <ion-list *ngIf="!loading && vehicles.length > 0">
+    <ion-item *ngFor="let vehicle of vehicles">
+      <ion-label>
+        <h2>{{ vehicle.vehicleNumber }}</h2>
+        <p>{{ vehicle.transporterId?.name || vehicle.transporterId }} • {{ vehicle.status }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <div *ngIf="!loading && vehicles.length === 0" class="empty-state">
+    <ion-icon name="bus-outline"></ion-icon>
+    <p>No vehicles found</p>
+  </div>
+</ion-content>
+</div>

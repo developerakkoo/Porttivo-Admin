@@ -1,0 +1,31 @@
+.filter-bar {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background: var(--ion-color-light);
+  border-bottom: 1px solid var(--ion-border-color);
+}
+
+.analytics-content {
+  padding: 16px;
+}
+
+.summary-item, .data-item {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--ion-border-color);
+}
+
+.data-value {
+  margin-left: 8px;
+  padding: 2px 8px;
+  background: var(--ion-color-light);
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
