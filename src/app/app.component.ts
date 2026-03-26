@@ -1,18 +1,22 @@
-import { Component } from '@angular/core';
-import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
-import { MenuComponent } from './components/menu/menu.component';
+import { Component, OnInit } from '@angular/core';
+import { SocketService } from './services/socket.service';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
-  standalone: true,
-  imports: [
-    IonApp,
-    IonRouterOutlet,
-    MenuComponent
-  ]
+  standalone: false
 })
-export class AppComponent {
-  constructor() {}
+export class AppComponent implements OnInit {
+  constructor(
+    private socketService: SocketService,
+    private authService: AuthService
+  ) {}
+
+  ngOnInit() {
+    if (this.authService.isAuthenticated()) {
+      this.socketService.connect();
+    }
+  }
 }

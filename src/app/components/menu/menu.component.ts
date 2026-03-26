@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { SocketService } from '../../services/socket.service';
 import {
   IonMenu,
   IonHeader,
@@ -37,10 +38,12 @@ import {
 export class MenuComponent {
   constructor(
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private socketService: SocketService
   ) {}
 
   logout() {
+    this.socketService.disconnect();
     this.authService.logout();
     this.router.navigate(['/login']);
   }

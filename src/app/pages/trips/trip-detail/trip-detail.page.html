@@ -1,0 +1,119 @@
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/trips"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Trip Detail</ion-title>
+  </ion-toolbar>
+
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div *ngIf="loading" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <div *ngIf="!loading && trip" class="trip-detail">
+    <ion-card class="status-card">
+      <ion-card-header>
+        <ion-card-title>{{ trip.tripId }}</ion-card-title>
+        <app-status-badge [status]="trip.status"></app-status-badge>
+      </ion-card-header>
+      <ion-card-content>
+        <p><strong>Container:</strong> {{ trip.containerNumber || '-' }}</p>
+        <p><strong>Reference:</strong> {{ trip.reference || '-' }}</p>
+        <p><strong>Trip Type:</strong> {{ trip.tripType || '-' }}</p>
+        <p><strong>Created:</strong> {{ formatDate(trip.createdAt) }}</p>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Customer</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p><strong>Name:</strong> {{ trip.customerId?.name || '-' }}</p>
+        <p><strong>Mobile:</strong> {{ trip.customerId?.mobile || '-' }}</p>
+        <p><strong>Email:</strong> {{ trip.customerId?.email || '-' }}</p>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Transporter</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p><strong>Name:</strong> {{ trip.transporterId?.name || trip.acceptedTransporterId?.name || '-' }}</p>
+        <p><strong>Company:</strong> {{ trip.transporterId?.company || trip.acceptedTransporterId?.company || '-' }}</p>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Driver & Vehicle</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p><strong>Driver:</strong> {{ trip.driverId?.name || '-' }} ({{ trip.driverId?.mobile || '-' }})</p>
+        <p><strong>Vehicle:</strong> {{ trip.vehicleId?.vehicleNumber || trip.hiredVehicle?.vehicleNumber || '-' }}</p>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Locations</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p><strong>Pickup:</strong> {{ pickupAddress }}</p>
+        <p><strong>Drop:</strong> {{ dropAddress }}</p>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card *ngIf="trip.status === 'ACTIVE' && (trip.pickupLocation?.coordinates || trip.dropLocation?.coordinates)">
+      <ion-card-header>
+        <ion-card-title>Live Tracking</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <app-trip-tracking-map
+          [pickupLocation]="trip.pickupLocation?.coordinates ? { latitude: trip.pickupLocation.coordinates.latitude, longitude: trip.pickupLocation.coordinates.longitude } : null"
+          [dropLocation]="trip.dropLocation?.coordinates ? { latitude: trip.dropLocation.coordinates.latitude, longitude: trip.dropLocation.coordinates.longitude } : null"
+          [driverLocation]="driverLocation"
+          [showDriverMarker]="true"
+        ></app-trip-tracking-map>
+        <p *ngIf="!driverLocation" class="waiting-location">Waiting for driver location...</p>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card *ngIf="timelineItems.length > 0">
+      <ion-card-header>
+        <ion-card-title>Milestones</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <app-timeline [items]="timelineItems"></app-timeline>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card *ngIf="trip.POD || trip.pod">
+      <ion-card-header>
+        <ion-card-title>POD</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <img *ngIf="podImageUrl" [src]="podImageUrl" alt="POD" class="pod-image" />
+        <p *ngIf="trip.POD?.uploadedAt || trip.pod?.uploadedAt">
+          Uploaded: {{ formatDate(trip.POD?.uploadedAt || trip.pod?.uploadedAt) }}
+        </p>
+        <p *ngIf="trip.POD?.approvedAt || trip.pod?.approvedAt">
+          Approved: {{ formatDate(trip.POD?.approvedAt || trip.pod?.approvedAt) }}
+        </p>
+        <p *ngIf="!(trip.POD?.approvedAt || trip.pod?.approvedAt) && (trip.POD?.photo || trip.pod?.photo)">
+          Awaiting approval
+        </p>
+      </ion-card-content>
+    </ion-card>
+
+    <div class="action-buttons" *ngIf="canCancel || canForceClose">
+      <ion-button *ngIf="canCancel" color="danger" (click)="doCancel()">Cancel Trip</ion-button>
+      <ion-button *ngIf="canForceClose" color="warning" (click)="doForceClose()">Force Close Without POD</ion-button>
+    </div>
+  </div>
+</ion-content>

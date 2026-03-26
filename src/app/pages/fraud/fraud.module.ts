@@ -6,12 +6,7 @@ import { FraudPageRoutingModule } from './fraud-routing.module';
 import { FraudPage } from './fraud.page';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    FraudPageRoutingModule,
-    FraudPage
-  ]
+  declarations: [FraudPage],
+  imports: [CommonModule, FormsModule, IonicModule, FraudPageRoutingModule],
 })
 export class FraudPageModule {}

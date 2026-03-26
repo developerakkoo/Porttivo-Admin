@@ -1,14 +1,6 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons>
-    <ion-title>Settlements</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" class="ion-padding">
+  <h1 class="page-title">Settlements</h1>
 
-<div class="ion-page" id="main-content">
-<ion-content [fullscreen]="true">
   <div *ngIf="pendingSettlements.length > 0" class="alert-section">
     <ion-card color="warning">
       <ion-card-header>
@@ -68,4 +60,3 @@
     <p>No settlements found</p>
   </div>
 </ion-content>
-</div>

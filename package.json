@@ -7,6 +7,8 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "verify:assets": "node scripts/verify-ionic-assets.cjs",
+    "build:bundle-css-parity": "ng build --configuration=bundleCssParity",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint"
@@ -14,6 +16,7 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "^20.0.0",
+    "@angular/cdk": "^21.2.2",
     "@angular/common": "^20.0.0",
     "@angular/compiler": "^20.0.0",
     "@angular/core": "^20.0.0",
@@ -27,8 +30,11 @@
     "@capacitor/keyboard": "8.0.0",
     "@capacitor/status-bar": "8.0.0",
     "@ionic/angular": "^8.0.0",
+    "chart.js": "^4.5.1",
     "ionicons": "^7.0.0",
+    "ng2-charts": "^10.0.0",
     "rxjs": "~7.8.0",
+    "socket.io-client": "^4.8.3",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
   },

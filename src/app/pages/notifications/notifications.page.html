@@ -1,0 +1,45 @@
+<ion-content [fullscreen]="true" class="ion-padding">
+  <h1 class="page-title">Send Notification</h1>
+  <ion-card class="send-card">
+    <ion-card-header>
+      <ion-card-title>Send Push Notification</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <form (ngSubmit)="send()">
+        <ion-item>
+          <ion-label position="stacked">User ID *</ion-label>
+          <ion-input [(ngModel)]="form.userId" name="userId" type="text" placeholder="MongoDB ObjectId of the user"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">User Type *</ion-label>
+          <ion-select [(ngModel)]="form.userType" name="userType" placeholder="Select user type">
+            <ion-select-option *ngFor="let t of userTypes" [value]="t">{{ t }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Type *</ion-label>
+          <ion-select [(ngModel)]="form.type" name="type" placeholder="Notification type">
+            <ion-select-option *ngFor="let t of types" [value]="t">{{ t }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Title *</ion-label>
+          <ion-input [(ngModel)]="form.title" name="title" type="text" placeholder="Notification title"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Message *</ion-label>
+          <ion-textarea [(ngModel)]="form.message" name="message" placeholder="Notification message" rows="4"></ion-textarea>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Priority</ion-label>
+          <ion-select [(ngModel)]="form.priority" name="priority" placeholder="Priority">
+            <ion-select-option *ngFor="let p of priorities" [value]="p">{{ p }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-button type="submit" expand="block" [disabled]="sending">
+          {{ sending ? 'Sending...' : 'Send Notification' }}
+        </ion-button>
+      </form>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

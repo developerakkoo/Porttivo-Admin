@@ -1,14 +1,5 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons>
-    <ion-title>Fuel Transactions</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<div class="ion-page" id="main-content">
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" class="ion-padding">
+  <h1 class="page-title">Fuel Transactions</h1>
   <div class="filter-bar">
     <ion-select [(ngModel)]="filters.status" (ionChange)="loadTransactions()" placeholder="All Status">
       <ion-select-option value="">All Status</ion-select-option>
@@ -38,4 +29,3 @@
     <p>No transactions found</p>
   </div>
 </ion-content>
-</div>

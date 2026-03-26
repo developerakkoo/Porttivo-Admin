@@ -1,49 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../../services/api.service';
-import { 
-  LoadingController, 
-  ToastController,
-  IonHeader,
-  IonToolbar,
-  IonButtons,
-  IonMenuButton,
-  IonTitle,
-  IonContent,
-  IonCard,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardContent,
-  IonSpinner,
-  IonList,
-  IonItem,
-  IonLabel,
-  IonIcon
-} from '@ionic/angular/standalone';
+import { ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-vehicles',
+  standalone: false,
   templateUrl: './vehicles.page.html',
   styleUrls: ['./vehicles.page.scss'],
-  standalone: true,
-  imports: [
-    CommonModule,
-    IonHeader,
-    IonToolbar,
-    IonButtons,
-    IonMenuButton,
-    IonTitle,
-    IonContent,
-    IonCard,
-    IonCardHeader,
-    IonCardTitle,
-    IonCardContent,
-    IonSpinner,
-    IonList,
-    IonItem,
-    IonLabel,
-    IonIcon
-  ]
 })
 export class VehiclesPage implements OnInit {
   vehicles: any[] = [];
@@ -52,7 +16,6 @@ export class VehiclesPage implements OnInit {
 
   constructor(
     private apiService: ApiService,
-    private loadingController: LoadingController,
     private toastController: ToastController
   ) {}
 
@@ -64,10 +27,14 @@ export class VehiclesPage implements OnInit {
   async loadVehicles() {
     this.loading = true;
     try {
-      const response = await this.apiService.getVehicles().toPromise();
+      const response = await firstValueFrom(this.apiService.getVehicles());
       if (response?.success) {
-        // Backend returns { data: { vehicles: [], pagination: {} } }
-        this.vehicles = (response.data as any).vehicles || (response.data as any).data || [];
+        if (Array.isArray(response.data)) {
+          this.vehicles = response.data as any;
+        } else {
+          this.vehicles =
+            (response.data as any).vehicles || (response.data as any).data || [];
+        }
       }
     } catch (error: any) {
       this.showToast(error.error?.message || 'Failed to load vehicles', 'danger');
@@ -78,12 +45,12 @@ export class VehiclesPage implements OnInit {
 
   async loadExpiringDocuments() {
     try {
-      const response = await this.apiService.getExpiringDocuments(30).toPromise();
-      if (response?.success) {
-        this.expiringDocuments = response.data.expiringDocuments;
+      const response = await firstValueFrom(this.apiService.getExpiringDocuments());
+      if (response?.success && response.data) {
+        this.expiringDocuments = response.data.expiringDocuments || [];
       }
-    } catch (error) {
-      console.error('Error loading expiring documents:', error);
+    } catch {
+      // optional
     }
   }
 
@@ -92,7 +59,7 @@ export class VehiclesPage implements OnInit {
       message,
       duration: 3000,
       color,
-      position: 'top'
+      position: 'top',
     });
     await toast.present();
   }

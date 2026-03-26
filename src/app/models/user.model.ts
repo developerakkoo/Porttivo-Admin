@@ -91,7 +91,7 @@ export interface CompanyUser {
     company: string;
   };
   hasAccess: boolean;
-  status: 'active' | 'inactive';
+  status: 'active' | 'inactive' | 'blocked';
   permissions: string[];
   hasPinSet: boolean;
   createdAt: string;

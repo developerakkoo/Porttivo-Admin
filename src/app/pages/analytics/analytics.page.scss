@@ -1,16 +1,101 @@
+// Colocated utilities (formerly global.scss)
 .filter-bar {
   display: flex;
-  gap: 12px;
-  padding: 16px;
-  background: var(--ion-color-light);
-  border-bottom: 1px solid var(--ion-border-color);
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--ion-card-background);
+  border: 1px solid var(--ion-border-color);
+  border-radius: var(--border-radius-lg);
+  margin-bottom: var(--space-6);
+  flex-wrap: wrap;
+  align-items: center;
+
+  .search-input,
+  input[type="text"],
+  input[type="search"] {
+    flex: 1;
+    min-width: 220px;
+    padding: 10px 14px;
+    border: 1px solid var(--ion-border-color);
+    border-radius: var(--border-radius);
+    font-size: var(--text-sm);
+    background: var(--ion-card-background);
+    color: var(--ion-text-color);
+
+    &::placeholder {
+      color: var(--color-text-secondary);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 2px rgba(var(--ion-color-primary-rgb), 0.2);
+    }
+  }
+
+  .filter-select,
+  select {
+    padding: 10px 14px;
+    border: 1px solid var(--ion-border-color);
+    border-radius: var(--border-radius);
+    font-size: var(--text-sm);
+    background: var(--ion-card-background);
+    color: var(--ion-text-color);
+    min-width: 140px;
+    cursor: pointer;
+
+    &:focus {
+      outline: none;
+      border-color: var(--color-primary);
+    }
+  }
+
+  .filter-input,
+  input[type="date"] {
+    padding: 10px 14px;
+    border: 1px solid var(--ion-border-color);
+    border-radius: var(--border-radius);
+    font-size: var(--text-sm);
+    background: var(--ion-card-background);
+    color: var(--ion-text-color);
+    min-width: 140px;
+
+    &:focus {
+      outline: none;
+      border-color: var(--color-primary);
+    }
+  }
+
+  ion-searchbar {
+    flex: 1;
+    min-width: 200px;
+    --background: var(--ion-card-background);
+    --border-radius: var(--border-radius);
+  }
+
+  ion-select {
+    min-width: 150px;
+  }
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
 }
 
 .analytics-content {
   padding: 16px;
 }
 
-.summary-item, .data-item {
+.chart-container {
+  height: 300px;
+  position: relative;
+}
+
+.summary-item,
+.data-item {
   padding: 8px 0;
   border-bottom: 1px solid var(--ion-border-color);
 }
@@ -21,11 +106,4 @@
   background: var(--ion-color-light);
   border-radius: 4px;
   font-size: 0.875rem;
-}
-
-.loading-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 400px;
 }

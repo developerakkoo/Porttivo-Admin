@@ -212,6 +212,22 @@ export class ApiService {
     );
   }
 
+  updateCompanyUserStatus(id: string, status: string): Observable<ApiResponse<any>> {
+    return this.http.put<ApiResponse<any>>(
+      `${this.apiUrl}/admin/company-users/${id}/status`,
+      { status },
+      { headers: this.getHeaders() }
+    );
+  }
+
+  updatePumpStaffStatus(id: string, status: string): Observable<ApiResponse<any>> {
+    return this.http.put<ApiResponse<any>>(
+      `${this.apiUrl}/admin/pump-staff/${id}/status`,
+      { status },
+      { headers: this.getHeaders() }
+    );
+  }
+
   // Trips
   getTrips(filters?: any): Observable<ApiResponse<PaginatedResponse<any>>> {
     let params = new HttpParams();
@@ -239,6 +255,30 @@ export class ApiService {
     return this.http.put<ApiResponse<any>>(
       `${this.apiUrl}/trips/${id}/cancel`,
       { reason },
+      { headers: this.getHeaders() }
+    );
+  }
+
+  adminUpdateTripStatus(tripId: string, status: string): Observable<ApiResponse<any>> {
+    return this.http.put<ApiResponse<any>>(
+      `${this.apiUrl}/admin/trips/${tripId}/status`,
+      { status },
+      { headers: this.getHeaders() }
+    );
+  }
+
+  adminReassignTrip(tripId: string, data: { transporterId?: string; driverId?: string; vehicleId?: string }): Observable<ApiResponse<any>> {
+    return this.http.put<ApiResponse<any>>(
+      `${this.apiUrl}/admin/trips/${tripId}/reassign`,
+      data,
+      { headers: this.getHeaders() }
+    );
+  }
+
+  closeTripWithoutPOD(tripId: string): Observable<ApiResponse<any>> {
+    return this.http.put<ApiResponse<any>>(
+      `${this.apiUrl}/trips/${tripId}/close-without-pod`,
+      {},
       { headers: this.getHeaders() }
     );
   }
@@ -469,6 +509,80 @@ export class ApiService {
       `${this.apiUrl}/notifications/send`,
       data,
       { headers: this.getHeaders() }
+    );
+  }
+
+  // Customers
+  getCustomer(id: string): Observable<ApiResponse<{ customer: any }>> {
+    return this.http.get<ApiResponse<{ customer: any }>>(
+      `${this.apiUrl}/admin/customers/${id}`,
+      { headers: this.getHeaders() }
+    );
+  }
+
+  getCustomersList(filters?: { page?: number; limit?: number; status?: string; search?: string }): Observable<ApiResponse<{ customers: any[]; pagination: any }>> {
+    let params = new HttpParams();
+    if (filters) {
+      Object.keys(filters).forEach(key => {
+        const value = (filters as any)[key];
+        if (value !== null && value !== undefined && value !== '') {
+          params = params.set(key, String(value));
+        }
+      });
+    }
+    return this.http.get<ApiResponse<{ customers: any[]; pagination: any }>>(
+      `${this.apiUrl}/admin/customers/list`,
+      { headers: this.getHeaders(), params }
+    );
+  }
+
+  updateCustomerStatus(customerId: string, status: string): Observable<ApiResponse<any>> {
+    return this.http.put<ApiResponse<any>>(
+      `${this.apiUrl}/admin/customers/${customerId}/status`,
+      { status },
+      { headers: this.getHeaders() }
+    );
+  }
+
+  getDuplicateCustomers(): Observable<ApiResponse<{ duplicates: any[] }>> {
+    return this.http.get<ApiResponse<{ duplicates: any[] }>>(
+      `${this.apiUrl}/admin/customers/duplicates`,
+      { headers: this.getHeaders() }
+    );
+  }
+
+  mergeCustomers(sourceCustomerId: string, targetCustomerId: string): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(
+      `${this.apiUrl}/admin/customers/merge`,
+      { sourceCustomerId, targetCustomerId },
+      { headers: this.getHeaders() }
+    );
+  }
+
+  // System Audit Logs
+  getSystemAuditLogs(filters?: {
+    page?: number;
+    limit?: number;
+    userType?: string;
+    action?: string;
+    resource?: string;
+    userId?: string;
+    startDate?: string;
+    endDate?: string;
+    result?: string;
+  }): Observable<ApiResponse<{ logs: any[]; pagination: { page: number; limit: number; total: number; pages: number } }>> {
+    let params = new HttpParams();
+    if (filters) {
+      Object.keys(filters).forEach(key => {
+        const value = (filters as any)[key];
+        if (value !== null && value !== undefined && value !== '') {
+          params = params.set(key, String(value));
+        }
+      });
+    }
+    return this.http.get<ApiResponse<{ logs: any[]; pagination: { page: number; limit: number; total: number; pages: number } }>>(
+      `${this.apiUrl}/admin/system-audit-logs`,
+      { headers: this.getHeaders(), params }
     );
   }
 }

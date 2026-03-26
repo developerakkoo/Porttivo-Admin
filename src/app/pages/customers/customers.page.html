@@ -1,0 +1,96 @@
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-toolbar>
+    <ion-title>Customers</ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-segment [(ngModel)]="activeTab" (ionChange)="onTabChange()">
+      <ion-segment-button value="all">
+        <ion-label>All Customers</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="duplicates">
+        <ion-label>Duplicates</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+
+  <div *ngIf="activeTab === 'all'" class="tab-content">
+    <div class="filter-bar">
+      <ion-input type="text" [(ngModel)]="customerFilters.search" placeholder="Search mobile, name, email" (ionChange)="loadCustomers()"></ion-input>
+      <ion-select [(ngModel)]="customerFilters.status" (ionChange)="loadCustomers()" placeholder="Status">
+        <ion-select-option value="">All</ion-select-option>
+        <ion-select-option value="active">Active</ion-select-option>
+        <ion-select-option value="blocked">Blocked</ion-select-option>
+      </ion-select>
+      <ion-button (click)="loadCustomers()">Apply</ion-button>
+    </div>
+
+    <div *ngIf="loading" class="loading-container">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+
+    <ion-list *ngIf="!loading && customers.length > 0">
+      <ion-item *ngFor="let c of customers">
+        <ion-label>
+          <h2>{{ c.name || 'N/A' }}</h2>
+          <p>{{ c.mobile }} <span *ngIf="c.email">• {{ c.email }}</span></p>
+          <p>{{ c.tripCount }} trips • {{ formatDate(c.createdAt) }}</p>
+        </ion-label>
+        <app-status-badge [status]="c.status"></app-status-badge>
+        <ion-button slot="end" fill="outline" size="small" (click)="viewCustomerDetail(c.id)">
+          View
+        </ion-button>
+        <ion-button slot="end" fill="clear" (click)="toggleCustomerStatus(c)" [color]="c.status === 'blocked' ? 'success' : 'danger'">
+          {{ c.status === 'blocked' ? 'Unblock' : 'Block' }}
+        </ion-button>
+      </ion-item>
+    </ion-list>
+
+    <div class="pagination-bar" *ngIf="!loading && customerPagination.pages > 1">
+      <ion-button fill="outline" size="small" [disabled]="customerPagination.page <= 1" (click)="goToCustomerPage(customerPagination.page - 1)">Prev</ion-button>
+      <span>Page {{ customerPagination.page }} of {{ customerPagination.pages }}</span>
+      <ion-button fill="outline" size="small" [disabled]="customerPagination.page >= customerPagination.pages" (click)="goToCustomerPage(customerPagination.page + 1)">Next</ion-button>
+    </div>
+
+    <div *ngIf="!loading && customers.length === 0" class="empty-state">
+      <ion-icon name="people-outline"></ion-icon>
+      <p>No customers found</p>
+    </div>
+  </div>
+
+  <div *ngIf="activeTab === 'duplicates'" class="tab-content">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Duplicate Customers</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>Customers with similar names (case-insensitive) are grouped below. Use the Merge button to merge duplicates into a single customer record.</p>
+      </ion-card-content>
+    </ion-card>
+
+    <div *ngIf="loading" class="loading-container">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+
+    <ion-list *ngIf="!loading && duplicates.length > 0">
+      <ion-item *ngFor="let group of duplicates">
+        <ion-label>
+          <h2>{{ group._id }}</h2>
+          <p>{{ group.count }} duplicate(s)</p>
+          <div *ngFor="let c of group.customers" class="customer-row">
+            <span>{{ c.name || 'N/A' }}</span>
+            <span *ngIf="c.mobile"> • {{ c.mobile }}</span>
+            <span *ngIf="c.email"> • {{ c.email }}</span>
+          </div>
+        </ion-label>
+        <ion-button slot="end" fill="solid" (click)="mergeCustomers(group)">
+          Merge
+        </ion-button>
+      </ion-item>
+    </ion-list>
+
+    <div *ngIf="!loading && duplicates.length === 0" class="empty-state">
+      <ion-icon name="people-outline"></ion-icon>
+      <p>No duplicate customers found</p>
+    </div>
+  </div>
+</ion-content>

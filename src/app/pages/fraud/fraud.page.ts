@@ -1,58 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../../services/api.service';
-import { 
-  LoadingController, 
-  ToastController, 
-  AlertController,
-  IonHeader,
-  IonToolbar,
-  IonButtons,
-  IonMenuButton,
-  IonTitle,
-  IonContent,
-  IonCard,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardContent,
-  IonSelect,
-  IonSelectOption,
-  IonSpinner,
-  IonList,
-  IonItem,
-  IonLabel,
-  IonButton,
-  IonIcon
-} from '@ionic/angular/standalone';
+import { LoadingController, ToastController, AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-fraud',
+  standalone: false,
   templateUrl: './fraud.page.html',
   styleUrls: ['./fraud.page.scss'],
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonHeader,
-    IonToolbar,
-    IonButtons,
-    IonMenuButton,
-    IonTitle,
-    IonContent,
-    IonCard,
-    IonCardHeader,
-    IonCardTitle,
-    IonCardContent,
-    IonSelect,
-    IonSelectOption,
-    IonSpinner,
-    IonList,
-    IonItem,
-    IonLabel,
-    IonButton,
-    IonIcon
-  ]
 })
 export class FraudPage implements OnInit {
   alerts: any[] = [];
@@ -76,7 +31,7 @@ export class FraudPage implements OnInit {
   async loadFraudAlerts() {
     this.loading = true;
     try {
-      const response = await this.apiService.getFraudAlerts(this.filters).toPromise();
+      const response = await firstValueFrom(this.apiService.getFraudAlerts(this.filters));
       if (response?.success) {
         // Backend returns { data: [...], pagination: {...} } but type says PaginatedResponse
         // Handle both structures for compatibility
@@ -97,7 +52,7 @@ export class FraudPage implements OnInit {
 
   async loadFraudStats() {
     try {
-      const response = await this.apiService.getFraudStats().toPromise();
+      const response = await firstValueFrom(this.apiService.getFraudStats());
       if (response?.success) {
         this.stats = response.data.stats;
       }
@@ -140,10 +95,10 @@ export class FraudPage implements OnInit {
             const loading = await this.loadingController.create({ message: 'Resolving...' });
             await loading.present();
             try {
-              const response = await this.apiService.resolveFraudAlert(alertId, {
+              const response = await firstValueFrom(this.apiService.resolveFraudAlert(alertId, {
                 isFraud: data.isFraud === 'true',
                 resolution: data.resolution || ''
-              }).toPromise();
+              }));
               if (response?.success) {
                 this.showToast('Fraud alert resolved', 'success');
                 await this.loadFraudAlerts();

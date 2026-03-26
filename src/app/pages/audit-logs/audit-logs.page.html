@@ -1,0 +1,78 @@
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-toolbar>
+    <ion-title>Audit Logs</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="refresh()">
+        <ion-icon name="refresh"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <div class="filter-bar">
+    <ion-select [(ngModel)]="filters.userType" placeholder="User Type" (ionChange)="applyFilters()">
+      <ion-select-option value="">All</ion-select-option>
+      <ion-select-option *ngFor="let t of userTypes" [value]="t">{{ t }}</ion-select-option>
+    </ion-select>
+    <ion-select [(ngModel)]="filters.action" placeholder="Action" (ionChange)="applyFilters()">
+      <ion-select-option value="">All</ion-select-option>
+      <ion-select-option *ngFor="let a of actions" [value]="a">{{ a }}</ion-select-option>
+    </ion-select>
+    <ion-select [(ngModel)]="filters.resource" placeholder="Resource" (ionChange)="applyFilters()">
+      <ion-select-option value="">All</ion-select-option>
+      <ion-select-option *ngFor="let r of resources" [value]="r">{{ r }}</ion-select-option>
+    </ion-select>
+    <ion-select [(ngModel)]="filters.result" placeholder="Result" (ionChange)="applyFilters()">
+      <ion-select-option value="">All</ion-select-option>
+      <ion-select-option *ngFor="let r of results" [value]="r">{{ r }}</ion-select-option>
+    </ion-select>
+    <ion-input type="date" [(ngModel)]="filters.startDate" placeholder="Start" (ionChange)="applyFilters()"></ion-input>
+    <ion-input type="date" [(ngModel)]="filters.endDate" placeholder="End" (ionChange)="applyFilters()"></ion-input>
+    <ion-button (click)="applyFilters()">Apply</ion-button>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <div class="logs-table-wrapper" *ngIf="!loading && logs.length > 0">
+    <ion-list>
+      <ion-item *ngFor="let log of logs" class="log-item">
+        <ion-label>
+          <div class="log-row">
+            <span class="log-timestamp">{{ formatDate(log.createdAt) }}</span>
+            <ion-badge [class]="getResultClass(log.result)" class="result-badge">{{ log.result }}</ion-badge>
+          </div>
+          <div class="log-row">
+            <span class="log-user-type">{{ log.userType }}</span>
+            <span class="log-user-id" *ngIf="log.userId">• {{ log.userId }}</span>
+          </div>
+          <div class="log-row">
+            <strong>{{ log.action }}</strong> on <strong>{{ log.resource }}</strong>
+            <span *ngIf="log.resourceId"> ({{ log.resourceId }})</span>
+          </div>
+          <div class="log-row log-meta">
+            {{ log.requestMethod }} {{ log.requestPath }}
+          </div>
+          <div class="log-row log-meta" *ngIf="log.ipAddress">
+            IP: {{ log.ipAddress }}
+          </div>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <div class="pagination-bar" *ngIf="!loading && pagination.pages > 1">
+    <ion-button fill="outline" size="small" [disabled]="pagination.page <= 1" (click)="goToPage(pagination.page - 1)">
+      Prev
+    </ion-button>
+    <span class="page-info">Page {{ pagination.page }} of {{ pagination.pages }} ({{ pagination.total }} total)</span>
+    <ion-button fill="outline" size="small" [disabled]="pagination.page >= pagination.pages" (click)="goToPage(pagination.page + 1)">
+      Next
+    </ion-button>
+  </div>
+
+  <div *ngIf="!loading && logs.length === 0" class="empty-state">
+    <ion-icon name="document-text-outline"></ion-icon>
+    <p>No audit logs found</p>
+  </div>
+</ion-content>

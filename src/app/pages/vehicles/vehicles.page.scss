@@ -1,17 +1,29 @@
-.alert-section {
-  padding: 16px;
-}
-
-.loading-container, .empty-state {
+// Colocated utilities (formerly global.scss)
+.loading-container {
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-height: 400px;
-  color: var(--ion-color-medium);
+  min-height: 200px;
 }
 
-.empty-state ion-icon {
-  font-size: 64px;
-  margin-bottom: 16px;
+.empty-state {
+  text-align: center;
+  padding: var(--space-8) var(--space-6);
+  color: var(--color-text-secondary);
+
+  ion-icon {
+    font-size: 64px;
+    margin-bottom: var(--space-4);
+    opacity: 0.5;
+  }
+
+  p {
+    font-size: var(--text-base);
+    margin: 0;
+    color: var(--ion-text-color);
+  }
+}
+
+.alert-section {
+  padding: 16px;
 }

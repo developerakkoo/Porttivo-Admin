@@ -1,58 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../../services/api.service';
-import { 
-  LoadingController, 
-  ToastController, 
-  AlertController,
-  IonHeader,
-  IonToolbar,
-  IonButtons,
-  IonMenuButton,
-  IonTitle,
-  IonContent,
-  IonCard,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardContent,
-  IonItem,
-  IonLabel,
-  IonInput,
-  IonButton,
-  IonIcon,
-  IonSpinner,
-  IonList,
-  IonBadge
-} from '@ionic/angular/standalone';
+import { LoadingController, ToastController, AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-fuel-cards',
+  standalone: false,
   templateUrl: './fuel-cards.page.html',
   styleUrls: ['./fuel-cards.page.scss'],
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonHeader,
-    IonToolbar,
-    IonButtons,
-    IonMenuButton,
-    IonTitle,
-    IonContent,
-    IonCard,
-    IonCardHeader,
-    IonCardTitle,
-    IonCardContent,
-    IonItem,
-    IonLabel,
-    IonInput,
-    IonButton,
-    IonIcon,
-    IonSpinner,
-    IonList,
-    IonBadge
-  ]
 })
 export class FuelCardsPage implements OnInit {
   cards: any[] = [];
@@ -74,7 +29,7 @@ export class FuelCardsPage implements OnInit {
   async loadFuelCards() {
     this.loading = true;
     try {
-      const response = await this.apiService.getFuelCards().toPromise();
+      const response = await firstValueFrom(this.apiService.getFuelCards());
       if (response?.success) {
         this.cards = response.data;
       }
@@ -95,7 +50,7 @@ export class FuelCardsPage implements OnInit {
     await loading.present();
 
     try {
-      const response = await this.apiService.createFuelCard(this.newCard).toPromise();
+      const response = await firstValueFrom(this.apiService.createFuelCard(this.newCard));
       if (response?.success) {
         this.showToast('Fuel card created successfully', 'success');
         this.showCreateForm = false;

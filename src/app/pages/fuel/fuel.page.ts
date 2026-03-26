@@ -1,49 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../../services/api.service';
-import { 
-  LoadingController, 
-  ToastController,
-  IonHeader,
-  IonToolbar,
-  IonButtons,
-  IonMenuButton,
-  IonTitle,
-  IonContent,
-  IonSelect,
-  IonSelectOption,
-  IonSpinner,
-  IonList,
-  IonItem,
-  IonLabel,
-  IonBadge,
-  IonIcon
-} from '@ionic/angular/standalone';
+import { ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-fuel',
+  standalone: false,
   templateUrl: './fuel.page.html',
   styleUrls: ['./fuel.page.scss'],
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonHeader,
-    IonToolbar,
-    IonButtons,
-    IonMenuButton,
-    IonTitle,
-    IonContent,
-    IonSelect,
-    IonSelectOption,
-    IonSpinner,
-    IonList,
-    IonItem,
-    IonLabel,
-    IonBadge,
-    IonIcon
-  ]
 })
 export class FuelPage implements OnInit {
   transactions: any[] = [];
@@ -53,7 +17,6 @@ export class FuelPage implements OnInit {
 
   constructor(
     private apiService: ApiService,
-    private loadingController: LoadingController,
     private toastController: ToastController
   ) {}
 
@@ -64,10 +27,8 @@ export class FuelPage implements OnInit {
   async loadTransactions() {
     this.loading = true;
     try {
-      const response = await this.apiService.getFuelTransactions(this.filters).toPromise();
+      const response = await firstValueFrom(this.apiService.getFuelTransactions(this.filters));
       if (response?.success) {
-        // Backend returns { data: [...], pagination: {...} } but type says PaginatedResponse
-        // Handle both structures for compatibility
         if (Array.isArray(response.data)) {
           this.transactions = response.data as any;
           this.pagination = (response as any).pagination || {};
@@ -88,7 +49,7 @@ export class FuelPage implements OnInit {
       message,
       duration: 3000,
       color,
-      position: 'top'
+      position: 'top',
     });
     await toast.present();
   }

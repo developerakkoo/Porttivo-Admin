@@ -1,185 +1,446 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons>
-    <ion-title>User Management</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" class="ion-padding">
+<div class="users-page page-container">
+  <div class="page-header-section">
+    <h1>User Management</h1>
+    <p>Manage transporters, drivers, pump owners, pump staff, and company users</p>
+  </div>
 
-<div class="ion-page" id="main-content">
-<ion-content [fullscreen]="true">
-  <ion-segment [(ngModel)]="selectedTab" (ionChange)="segmentChanged($event)" value="transporters">
-    <ion-segment-button value="transporters">
-      <ion-label>Transporters</ion-label>
-    </ion-segment-button>
-    <ion-segment-button value="drivers">
-      <ion-label>Drivers</ion-label>
-    </ion-segment-button>
-    <ion-segment-button value="pumpOwners">
-      <ion-label>Pump Owners</ion-label>
-    </ion-segment-button>
-    <ion-segment-button value="pumpStaff">
-      <ion-label>Pump Staff</ion-label>
-    </ion-segment-button>
-    <ion-segment-button value="companyUsers">
-      <ion-label>Company Users</ion-label>
-    </ion-segment-button>
-  </ion-segment>
+  <div class="users-tabs">
+    <ion-segment
+      [scrollable]="true"
+      [(ngModel)]="selectedTab"
+      (ionChange)="segmentChanged($event)"
+      value="transporters"
+      mode="md">
+      <ion-segment-button value="transporters">
+        <ion-label class="users-tab-label">Transporters</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="drivers">
+        <ion-label class="users-tab-label">Drivers</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="pumpOwners">
+        <ion-label class="users-tab-label">Pump Owners</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="pumpStaff">
+        <ion-label class="users-tab-label">Pump Staff</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="companyUsers">
+        <ion-label class="users-tab-label">Company Users</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </div>
 
-  <div class="filter-bar">
+  <!-- Transporters filters -->
+  <div class="filter-bar filter-bar-grid" *ngIf="selectedTab === 'transporters'">
     <ion-searchbar
-      *ngIf="selectedTab === 'transporters'"
       [(ngModel)]="filters.transporters.search"
-      (ionInput)="onFilterChange()"
-      placeholder="Search transporters...">
+      (ionInput)="onSearchInput()"
+      debounce="400"
+      placeholder="Search name, mobile, email, company">
     </ion-searchbar>
     <ion-select
-      [(ngModel)]="filters[selectedTab].status"
+      [(ngModel)]="filters.transporters.status"
       (ionChange)="onFilterChange()"
-      placeholder="All Status"
+      placeholder="All status"
       interface="popover">
-      <ion-select-option value="">All Status</ion-select-option>
+      <ion-select-option value="">All status</ion-select-option>
       <ion-select-option value="active">Active</ion-select-option>
       <ion-select-option value="inactive">Inactive</ion-select-option>
       <ion-select-option value="blocked">Blocked</ion-select-option>
-      <ion-select-option value="pending" *ngIf="selectedTab === 'transporters' || selectedTab === 'pumpOwners'">Pending</ion-select-option>
+      <ion-select-option value="pending">Pending</ion-select-option>
+    </ion-select>
+    <ion-select
+      [(ngModel)]="filters.transporters.sortBy"
+      (ionChange)="onFilterChange()"
+      placeholder="Sort by"
+      interface="popover">
+      <ion-select-option value="createdAt">Created</ion-select-option>
+      <ion-select-option value="name">Name</ion-select-option>
+      <ion-select-option value="mobile">Mobile</ion-select-option>
+    </ion-select>
+    <ion-select
+      [(ngModel)]="filters.transporters.sortOrder"
+      (ionChange)="onFilterChange()"
+      interface="popover">
+      <ion-select-option value="desc">Newest first</ion-select-option>
+      <ion-select-option value="asc">Oldest first</ion-select-option>
+    </ion-select>
+    <ion-select
+      [(ngModel)]="filters.transporters.limit"
+      (ionChange)="onFilterChange()"
+      interface="popover">
+      <ion-select-option [value]="10">10 / page</ion-select-option>
+      <ion-select-option [value]="20">20 / page</ion-select-option>
+      <ion-select-option [value]="50">50 / page</ion-select-option>
     </ion-select>
   </div>
 
-  <div *ngIf="loading" class="loading-container">
-    <ion-spinner name="crescent"></ion-spinner>
+  <!-- Drivers filters -->
+  <div class="filter-bar filter-bar-grid" *ngIf="selectedTab === 'drivers'">
+    <ion-searchbar
+      [(ngModel)]="filters.drivers.search"
+      (ionInput)="onSearchInput()"
+      debounce="400"
+      placeholder="Search name or mobile">
+    </ion-searchbar>
+    <ion-select
+      [(ngModel)]="filters.drivers.transporterId"
+      (ionChange)="onFilterChange()"
+      placeholder="All transporters"
+      interface="popover">
+      <ion-select-option value="">All transporters</ion-select-option>
+      <ion-select-option *ngFor="let t of transporterFilterOptions" [value]="t.id">{{ t.label }}</ion-select-option>
+    </ion-select>
+    <ion-select
+      [(ngModel)]="filters.drivers.status"
+      (ionChange)="onFilterChange()"
+      placeholder="All status"
+      interface="popover">
+      <ion-select-option value="">All status</ion-select-option>
+      <ion-select-option value="pending">Pending</ion-select-option>
+      <ion-select-option value="active">Active</ion-select-option>
+      <ion-select-option value="inactive">Inactive</ion-select-option>
+      <ion-select-option value="blocked">Blocked</ion-select-option>
+    </ion-select>
+    <ion-select
+      [(ngModel)]="filters.drivers.riskLevel"
+      (ionChange)="onFilterChange()"
+      placeholder="Risk"
+      interface="popover">
+      <ion-select-option value="">All risk</ion-select-option>
+      <ion-select-option value="low">Low</ion-select-option>
+      <ion-select-option value="medium">Medium</ion-select-option>
+      <ion-select-option value="high">High</ion-select-option>
+    </ion-select>
+    <ion-select
+      [(ngModel)]="filters.drivers.sortBy"
+      (ionChange)="onFilterChange()"
+      interface="popover">
+      <ion-select-option value="createdAt">Sort: created</ion-select-option>
+      <ion-select-option value="name">Sort: name</ion-select-option>
+      <ion-select-option value="mobile">Sort: mobile</ion-select-option>
+    </ion-select>
+    <ion-select
+      [(ngModel)]="filters.drivers.sortOrder"
+      (ionChange)="onFilterChange()"
+      interface="popover">
+      <ion-select-option value="desc">Desc</ion-select-option>
+      <ion-select-option value="asc">Asc</ion-select-option>
+    </ion-select>
+    <ion-select
+      [(ngModel)]="filters.drivers.limit"
+      (ionChange)="onFilterChange()"
+      interface="popover">
+      <ion-select-option [value]="10">10 / page</ion-select-option>
+      <ion-select-option [value]="20">20 / page</ion-select-option>
+      <ion-select-option [value]="50">50 / page</ion-select-option>
+    </ion-select>
+  </div>
+
+  <!-- Pump owners filters -->
+  <div class="filter-bar filter-bar-grid" *ngIf="selectedTab === 'pumpOwners'">
+    <ion-searchbar
+      [(ngModel)]="filters.pumpOwners.search"
+      (ionInput)="onSearchInput()"
+      debounce="400"
+      placeholder="Search name, mobile, email, pump">
+    </ion-searchbar>
+    <ion-select
+      [(ngModel)]="filters.pumpOwners.status"
+      (ionChange)="onFilterChange()"
+      placeholder="All status"
+      interface="popover">
+      <ion-select-option value="">All status</ion-select-option>
+      <ion-select-option value="active">Active</ion-select-option>
+      <ion-select-option value="inactive">Inactive</ion-select-option>
+      <ion-select-option value="blocked">Blocked</ion-select-option>
+      <ion-select-option value="pending">Pending</ion-select-option>
+    </ion-select>
+    <ion-select
+      [(ngModel)]="filters.pumpOwners.sortBy"
+      (ionChange)="onFilterChange()"
+      interface="popover">
+      <ion-select-option value="createdAt">Sort: created</ion-select-option>
+      <ion-select-option value="name">Sort: name</ion-select-option>
+      <ion-select-option value="mobile">Sort: mobile</ion-select-option>
+    </ion-select>
+    <ion-select
+      [(ngModel)]="filters.pumpOwners.sortOrder"
+      (ionChange)="onFilterChange()"
+      interface="popover">
+      <ion-select-option value="desc">Desc</ion-select-option>
+      <ion-select-option value="asc">Asc</ion-select-option>
+    </ion-select>
+    <ion-select
+      [(ngModel)]="filters.pumpOwners.limit"
+      (ionChange)="onFilterChange()"
+      interface="popover">
+      <ion-select-option [value]="10">10 / page</ion-select-option>
+      <ion-select-option [value]="20">20 / page</ion-select-option>
+      <ion-select-option [value]="50">50 / page</ion-select-option>
+    </ion-select>
+  </div>
+
+  <!-- Pump staff filters -->
+  <div class="filter-bar filter-bar-grid" *ngIf="selectedTab === 'pumpStaff'">
+    <ion-searchbar
+      [(ngModel)]="filters.pumpStaff.search"
+      (ionInput)="onSearchInput()"
+      debounce="400"
+      placeholder="Search name or mobile">
+    </ion-searchbar>
+    <ion-select
+      [(ngModel)]="filters.pumpStaff.pumpOwnerId"
+      (ionChange)="onFilterChange()"
+      placeholder="All pump owners"
+      interface="popover">
+      <ion-select-option value="">All pump owners</ion-select-option>
+      <ion-select-option *ngFor="let p of pumpOwnerFilterOptions" [value]="p.id">{{ p.label }}</ion-select-option>
+    </ion-select>
+    <ion-select
+      [(ngModel)]="filters.pumpStaff.status"
+      (ionChange)="onFilterChange()"
+      placeholder="All status"
+      interface="popover">
+      <ion-select-option value="">All status</ion-select-option>
+      <ion-select-option value="active">Active</ion-select-option>
+      <ion-select-option value="inactive">Inactive</ion-select-option>
+      <ion-select-option value="blocked">Blocked</ion-select-option>
+      <ion-select-option value="disabled">Disabled</ion-select-option>
+    </ion-select>
+    <ion-select
+      [(ngModel)]="filters.pumpStaff.sortBy"
+      (ionChange)="onFilterChange()"
+      interface="popover">
+      <ion-select-option value="createdAt">Sort: created</ion-select-option>
+      <ion-select-option value="name">Sort: name</ion-select-option>
+      <ion-select-option value="mobile">Sort: mobile</ion-select-option>
+    </ion-select>
+    <ion-select
+      [(ngModel)]="filters.pumpStaff.sortOrder"
+      (ionChange)="onFilterChange()"
+      interface="popover">
+      <ion-select-option value="desc">Desc</ion-select-option>
+      <ion-select-option value="asc">Asc</ion-select-option>
+    </ion-select>
+    <ion-select
+      [(ngModel)]="filters.pumpStaff.limit"
+      (ionChange)="onFilterChange()"
+      interface="popover">
+      <ion-select-option [value]="10">10 / page</ion-select-option>
+      <ion-select-option [value]="20">20 / page</ion-select-option>
+      <ion-select-option [value]="50">50 / page</ion-select-option>
+    </ion-select>
+  </div>
+
+  <!-- Company users filters -->
+  <div class="filter-bar filter-bar-grid" *ngIf="selectedTab === 'companyUsers'">
+    <ion-searchbar
+      [(ngModel)]="filters.companyUsers.search"
+      (ionInput)="onSearchInput()"
+      debounce="400"
+      placeholder="Search name, mobile, email, company">
+    </ion-searchbar>
+    <ion-select
+      [(ngModel)]="filters.companyUsers.transporterId"
+      (ionChange)="onFilterChange()"
+      placeholder="All transporters"
+      interface="popover">
+      <ion-select-option value="">All transporters</ion-select-option>
+      <ion-select-option *ngFor="let t of transporterFilterOptions" [value]="t.id">{{ t.label }}</ion-select-option>
+    </ion-select>
+    <ion-select
+      [(ngModel)]="filters.companyUsers.status"
+      (ionChange)="onFilterChange()"
+      placeholder="All status"
+      interface="popover">
+      <ion-select-option value="">All status</ion-select-option>
+      <ion-select-option value="active">Active</ion-select-option>
+      <ion-select-option value="inactive">Inactive</ion-select-option>
+      <ion-select-option value="blocked">Blocked</ion-select-option>
+    </ion-select>
+    <ion-select
+      [(ngModel)]="filters.companyUsers.hasAccess"
+      (ionChange)="onFilterChange()"
+      placeholder="Access"
+      interface="popover">
+      <ion-select-option value="">Any access</ion-select-option>
+      <ion-select-option value="true">Access enabled</ion-select-option>
+      <ion-select-option value="false">Access disabled</ion-select-option>
+    </ion-select>
+    <ion-select
+      [(ngModel)]="filters.companyUsers.sortBy"
+      (ionChange)="onFilterChange()"
+      interface="popover">
+      <ion-select-option value="createdAt">Sort: created</ion-select-option>
+      <ion-select-option value="name">Sort: name</ion-select-option>
+      <ion-select-option value="mobile">Sort: mobile</ion-select-option>
+    </ion-select>
+    <ion-select
+      [(ngModel)]="filters.companyUsers.sortOrder"
+      (ionChange)="onFilterChange()"
+      interface="popover">
+      <ion-select-option value="desc">Desc</ion-select-option>
+      <ion-select-option value="asc">Asc</ion-select-option>
+    </ion-select>
+    <ion-select
+      [(ngModel)]="filters.companyUsers.limit"
+      (ionChange)="onFilterChange()"
+      interface="popover">
+      <ion-select-option [value]="10">10 / page</ion-select-option>
+      <ion-select-option [value]="20">20 / page</ion-select-option>
+      <ion-select-option [value]="50">50 / page</ion-select-option>
+    </ion-select>
+  </div>
+
+  <div *ngIf="loading" class="loading-section">
+    <app-skeleton-loader [rows]="6" [widths]="['30%', '25%', '20%', '15%']" [fullWidth]="true"></app-skeleton-loader>
   </div>
 
   <!-- Transporters List -->
-  <div *ngIf="!loading && selectedTab === 'transporters'">
-    <ion-list *ngIf="transporters.length > 0">
-      <ion-item *ngFor="let transporter of transporters" button (click)="viewDetails(transporter.id, 'transporter')">
-        <ion-label>
-          <h2>{{ transporter.name }}</h2>
-          <p>{{ transporter.company }} • {{ transporter.mobile }}</p>
-          <p *ngIf="transporter.email">{{ transporter.email }}</p>
-        </ion-label>
-        <ion-badge [class]="getStatusClass(transporter.status)" slot="end">
-          {{ transporter.status }}
-        </ion-badge>
-        <ion-button
-          slot="end"
-          fill="clear"
-          (click)="updateStatus(transporter.id, transporter.status, 'transporter'); $event.stopPropagation()">
-          <ion-icon name="settings"></ion-icon>
-        </ion-button>
-      </ion-item>
-    </ion-list>
-    <div *ngIf="transporters.length === 0" class="empty-state">
-      <ion-icon name="people-outline"></ion-icon>
-      <p>No transporters found</p>
+  <div *ngIf="!loading && selectedTab === 'transporters'" class="users-list-container enterprise-card">
+    <div *ngIf="transporters.length > 0" class="users-list">
+      <div *ngFor="let transporter of transporters" class="user-row" (click)="viewDetails(transporter.id, 'transporter')">
+        <div class="user-info">
+          <span class="user-name">{{ transporter.name }}</span>
+          <span class="user-meta">{{ transporter.company }} • {{ transporter.mobile }}</span>
+          <span class="user-meta" *ngIf="transporter.email">{{ transporter.email }}</span>
+        </div>
+        <div class="user-actions">
+          <button type="button" class="btn-view" (click)="viewDetails(transporter.id, 'transporter'); $event.stopPropagation()" title="View details">
+            <ion-icon name="eye-outline"></ion-icon>
+            <span>View</span>
+          </button>
+          <app-status-badge [status]="transporter.status"></app-status-badge>
+          <button type="button" class="btn-ghost btn-icon" (click)="updateStatus(transporter.id, transporter.status, 'transporter'); $event.stopPropagation()" title="Update status">
+            <ion-icon name="settings-outline"></ion-icon>
+          </button>
+        </div>
+      </div>
     </div>
-    <ion-footer *ngIf="transportersPagination.pages > 1">
-      <ion-toolbar>
-        <ion-buttons>
-          <ion-button (click)="goToPage(transportersPagination.page - 1)" [disabled]="transportersPagination.page === 1">
-            Previous
-          </ion-button>
-          <ion-label>Page {{ transportersPagination.page }} of {{ transportersPagination.pages }}</ion-label>
-          <ion-button (click)="goToPage(transportersPagination.page + 1)" [disabled]="transportersPagination.page === transportersPagination.pages">
-            Next
-          </ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-footer>
+    <app-empty-state *ngIf="transporters.length === 0" icon="people-outline" title="No transporters found" message="Try adjusting your search or filters."></app-empty-state>
+    <div *ngIf="pagPages() > 1" class="list-pagination">
+      <button type="button" class="btn-secondary" [disabled]="pagPage() <= 1" (click)="goToPage(pagPage() - 1)">Previous</button>
+      <span class="pagination-info">Page {{ pagPage() }} of {{ pagPages() }}</span>
+      <button type="button" class="btn-secondary" [disabled]="pagPage() >= pagPages()" (click)="goToPage(pagPage() + 1)">Next</button>
+    </div>
   </div>
 
   <!-- Drivers List -->
-  <div *ngIf="!loading && selectedTab === 'drivers'">
-    <ion-list *ngIf="drivers.length > 0">
-      <ion-item *ngFor="let driver of drivers" button (click)="viewDetails(driver.id, 'driver')">
-        <ion-label>
-          <h2>{{ driver.name }}</h2>
-          <p>{{ driver.transporter?.company || driver.transporterId }} • {{ driver.mobile }}</p>
-          <p>Risk: {{ driver.riskLevel }} • Trips: {{ driver.totalTrips || 0 }}</p>
-        </ion-label>
-        <ion-badge [class]="getStatusClass(driver.status)" slot="end">
-          {{ driver.status }}
-        </ion-badge>
-        <ion-button
-          slot="end"
-          fill="clear"
-          (click)="updateStatus(driver.id, driver.status, 'driver'); $event.stopPropagation()">
-          <ion-icon name="settings"></ion-icon>
-        </ion-button>
-      </ion-item>
-    </ion-list>
-    <div *ngIf="drivers.length === 0" class="empty-state">
-      <ion-icon name="car-outline"></ion-icon>
-      <p>No drivers found</p>
+  <div *ngIf="!loading && selectedTab === 'drivers'" class="users-list-container enterprise-card">
+    <div *ngIf="drivers.length > 0" class="users-list">
+      <div *ngFor="let driver of drivers" class="user-row" (click)="viewDetails(driver.id, 'driver')">
+        <div class="user-info">
+          <span class="user-name">{{ driver.name }}</span>
+          <span class="user-meta">{{ driver.transporter?.company || driver.transporterId }} • {{ driver.mobile }}</span>
+          <span class="user-meta">Risk: {{ driver.riskLevel }} • Trips: {{ driver.totalTrips || 0 }}</span>
+        </div>
+        <div class="user-actions">
+          <button type="button" class="btn-view" (click)="viewDetails(driver.id, 'driver'); $event.stopPropagation()" title="View details">
+            <ion-icon name="eye-outline"></ion-icon>
+            <span>View</span>
+          </button>
+          <app-status-badge [status]="driver.status"></app-status-badge>
+          <button type="button" class="btn-ghost btn-icon" (click)="updateStatus(driver.id, driver.status, 'driver'); $event.stopPropagation()" title="Update status">
+            <ion-icon name="settings-outline"></ion-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+    <app-empty-state *ngIf="drivers.length === 0" icon="car-outline" title="No drivers found" message="Try adjusting your filters."></app-empty-state>
+    <div *ngIf="pagPages() > 1" class="list-pagination">
+      <button type="button" class="btn-secondary" [disabled]="pagPage() <= 1" (click)="goToPage(pagPage() - 1)">Previous</button>
+      <span class="pagination-info">Page {{ pagPage() }} of {{ pagPages() }}</span>
+      <button type="button" class="btn-secondary" [disabled]="pagPage() >= pagPages()" (click)="goToPage(pagPage() + 1)">Next</button>
     </div>
   </div>
 
   <!-- Pump Owners List -->
-  <div *ngIf="!loading && selectedTab === 'pumpOwners'">
-    <ion-list *ngIf="pumpOwners.length > 0">
-      <ion-item *ngFor="let owner of pumpOwners" button (click)="viewDetails(owner.id, 'pumpOwner')">
-        <ion-label>
-          <h2>{{ owner.name }}</h2>
-          <p>{{ owner.pumpName }} • {{ owner.mobile }}</p>
-          <p>Commission: {{ owner.commissionRate }}% • Fuel Value: ₹{{ formatNumber(owner.totalFuelValue || 0) }}</p>
-        </ion-label>
-        <ion-badge [class]="getStatusClass(owner.status)" slot="end">
-          {{ owner.status }}
-        </ion-badge>
-        <ion-button
-          slot="end"
-          fill="clear"
-          (click)="updateStatus(owner.id, owner.status, 'pumpOwner'); $event.stopPropagation()">
-          <ion-icon name="settings"></ion-icon>
-        </ion-button>
-      </ion-item>
-    </ion-list>
-    <div *ngIf="pumpOwners.length === 0" class="empty-state">
-      <ion-icon name="storefront-outline"></ion-icon>
-      <p>No pump owners found</p>
+  <div *ngIf="!loading && selectedTab === 'pumpOwners'" class="users-list-container enterprise-card">
+    <div *ngIf="pumpOwners.length > 0" class="users-list">
+      <div *ngFor="let owner of pumpOwners" class="user-row" (click)="viewDetails(owner.id, 'pumpOwner')">
+        <div class="user-info">
+          <span class="user-name">{{ owner.name }}</span>
+          <span class="user-meta">{{ owner.pumpName }} • {{ owner.mobile }}</span>
+          <span class="user-meta">Commission: {{ owner.commissionRate }}% • Fuel Value: ₹{{ formatNumber(owner.totalFuelValue || 0) }}</span>
+        </div>
+        <div class="user-actions">
+          <button type="button" class="btn-view" (click)="viewDetails(owner.id, 'pumpOwner'); $event.stopPropagation()" title="View details">
+            <ion-icon name="eye-outline"></ion-icon>
+            <span>View</span>
+          </button>
+          <app-status-badge [status]="owner.status"></app-status-badge>
+          <button type="button" class="btn-ghost btn-icon" (click)="updateStatus(owner.id, owner.status, 'pumpOwner'); $event.stopPropagation()" title="Update status">
+            <ion-icon name="settings-outline"></ion-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+    <app-empty-state *ngIf="pumpOwners.length === 0" icon="storefront-outline" title="No pump owners found" message="Try adjusting your filters."></app-empty-state>
+    <div *ngIf="pagPages() > 1" class="list-pagination">
+      <button type="button" class="btn-secondary" [disabled]="pagPage() <= 1" (click)="goToPage(pagPage() - 1)">Previous</button>
+      <span class="pagination-info">Page {{ pagPage() }} of {{ pagPages() }}</span>
+      <button type="button" class="btn-secondary" [disabled]="pagPage() >= pagPages()" (click)="goToPage(pagPage() + 1)">Next</button>
     </div>
   </div>
 
   <!-- Pump Staff List -->
-  <div *ngIf="!loading && selectedTab === 'pumpStaff'">
-    <ion-list *ngIf="pumpStaff.length > 0">
-      <ion-item *ngFor="let staff of pumpStaff" button (click)="viewDetails(staff.id, 'pumpStaff')">
-        <ion-label>
-          <h2>{{ staff.name }}</h2>
-          <p>{{ staff.pumpOwner?.pumpName || staff.pumpOwnerId }} • {{ staff.mobile }}</p>
-          <p>Transactions: {{ staff.totalTransactions || 0 }}</p>
-        </ion-label>
-        <ion-badge [class]="getStatusClass(staff.status)" slot="end">
-          {{ staff.status }}
-        </ion-badge>
-      </ion-item>
-    </ion-list>
-    <div *ngIf="pumpStaff.length === 0" class="empty-state">
-      <ion-icon name="person-outline"></ion-icon>
-      <p>No pump staff found</p>
+  <div *ngIf="!loading && selectedTab === 'pumpStaff'" class="users-list-container enterprise-card">
+    <div *ngIf="pumpStaff.length > 0" class="users-list">
+      <div *ngFor="let staff of pumpStaff" class="user-row" (click)="viewDetails(staff.id, 'pumpStaff')">
+        <div class="user-info">
+          <span class="user-name">{{ staff.name }}</span>
+          <span class="user-meta">{{ staff.pumpOwner?.pumpName || staff.pumpOwnerId }} • {{ staff.mobile }}</span>
+          <span class="user-meta">Transactions: {{ staff.totalTransactions || 0 }}</span>
+        </div>
+        <div class="user-actions">
+          <button type="button" class="btn-view" (click)="viewDetails(staff.id, 'pumpStaff'); $event.stopPropagation()" title="View details">
+            <ion-icon name="eye-outline"></ion-icon>
+            <span>View</span>
+          </button>
+          <app-status-badge [status]="staff.status"></app-status-badge>
+          <button type="button" class="btn-ghost btn-icon" (click)="updateStatus(staff.id, staff.status, 'pumpStaff'); $event.stopPropagation()" title="Update status">
+            <ion-icon name="settings-outline"></ion-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+    <app-empty-state *ngIf="pumpStaff.length === 0" icon="person-outline" title="No pump staff found" message="Try adjusting your filters."></app-empty-state>
+    <div *ngIf="pagPages() > 1" class="list-pagination">
+      <button type="button" class="btn-secondary" [disabled]="pagPage() <= 1" (click)="goToPage(pagPage() - 1)">Previous</button>
+      <span class="pagination-info">Page {{ pagPage() }} of {{ pagPages() }}</span>
+      <button type="button" class="btn-secondary" [disabled]="pagPage() >= pagPages()" (click)="goToPage(pagPage() + 1)">Next</button>
     </div>
   </div>
 
   <!-- Company Users List -->
-  <div *ngIf="!loading && selectedTab === 'companyUsers'">
-    <ion-list *ngIf="companyUsers.length > 0">
-      <ion-item *ngFor="let user of companyUsers" button (click)="viewDetails(user.id, 'companyUser')">
-        <ion-label>
-          <h2>{{ user.name }}</h2>
-          <p>{{ user.transporter?.company || user.transporterId }} • {{ user.mobile }}</p>
-          <p *ngIf="user.email">{{ user.email }}</p>
-        </ion-label>
-        <ion-badge [class]="getStatusClass(user.status)" slot="end">
-          {{ user.status }}
-        </ion-badge>
-      </ion-item>
-    </ion-list>
-    <div *ngIf="companyUsers.length === 0" class="empty-state">
-      <ion-icon name="people-outline"></ion-icon>
-      <p>No company users found</p>
+  <div *ngIf="!loading && selectedTab === 'companyUsers'" class="users-list-container enterprise-card">
+    <div *ngIf="companyUsers.length > 0" class="users-list">
+      <div *ngFor="let user of companyUsers" class="user-row" (click)="viewDetails(user.id, 'companyUser')">
+        <div class="user-info">
+          <span class="user-name">{{ user.name }}</span>
+          <span class="user-meta">{{ user.transporter?.company || user.transporterId }} • {{ user.mobile }}</span>
+          <span class="user-meta" *ngIf="user.email">{{ user.email }}</span>
+          <span class="user-meta">Access: {{ user.hasAccess ? 'Enabled' : 'Disabled' }}</span>
+        </div>
+        <div class="user-actions">
+          <button type="button" class="btn-view" (click)="viewDetails(user.id, 'companyUser'); $event.stopPropagation()" title="View details">
+            <ion-icon name="eye-outline"></ion-icon>
+            <span>View</span>
+          </button>
+          <app-status-badge [status]="user.status"></app-status-badge>
+          <button type="button" class="btn-ghost btn-icon" (click)="updateStatus(user.id, user.status, 'companyUser'); $event.stopPropagation()" title="Update status">
+            <ion-icon name="settings-outline"></ion-icon>
+          </button>
+        </div>
+      </div>
     </div>
+    <app-empty-state *ngIf="companyUsers.length === 0" icon="people-outline" title="No company users found" message="Try adjusting your filters."></app-empty-state>
+    <div *ngIf="pagPages() > 1" class="list-pagination">
+      <button type="button" class="btn-secondary" [disabled]="pagPage() <= 1" (click)="goToPage(pagPage() - 1)">Previous</button>
+      <span class="pagination-info">Page {{ pagPage() }} of {{ pagPages() }}</span>
+      <button type="button" class="btn-secondary" [disabled]="pagPage() >= pagPages()" (click)="goToPage(pagPage() + 1)">Next</button>
     </div>
-</ion-content>
+  </div>
 </div>
+</ion-content>

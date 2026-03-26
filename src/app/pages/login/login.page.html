@@ -1,10 +1,11 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>Porttivo Admin</ion-title>
+<ion-header [translucent]="false" class="login-header-bar">
+  <ion-toolbar class="login-toolbar">
+    <ion-title class="login-toolbar-title">Porttivo Admin</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="login-content">
+<ion-content [fullscreen]="false" class="login-content">
+  <div class="login-backdrop" aria-hidden="true"></div>
   <div class="login-container">
     <div class="login-card">
       <div class="login-header">
@@ -13,40 +14,46 @@
       </div>
 
       <form [formGroup]="loginForm" (ngSubmit)="login()">
-        <ion-item lines="full" class="form-item">
-          <ion-label position="stacked">Email</ion-label>
+        <div class="form-field">
           <ion-input
+            mode="md"
+            fill="outline"
+            label="Email"
+            labelPlacement="stacked"
             type="email"
             formControlName="email"
             placeholder="admin@porttivo.com"
             required>
           </ion-input>
-        </ion-item>
+        </div>
         <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="error-message">
           Please enter a valid email address
         </div>
 
-        <ion-item lines="full" class="form-item">
-          <ion-label position="stacked">Password</ion-label>
+        <div class="form-field">
           <ion-input
+            mode="md"
+            fill="outline"
+            label="Password"
+            labelPlacement="stacked"
             type="password"
             formControlName="password"
             placeholder="Enter your password"
             required>
           </ion-input>
-        </ion-item>
+        </div>
         <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="error-message">
           Password must be at least 6 characters
         </div>
 
-        <ion-button
-          expand="block"
+        <button
           type="submit"
+          class="btn-primary login-submit-btn"
           [disabled]="loginForm.invalid || isLoading"
-          class="login-button">
-          <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+        >
+          <ion-spinner *ngIf="isLoading" name="crescent" class="login-submit-spinner"></ion-spinner>
           <span *ngIf="!isLoading">Sign In</span>
-        </ion-button>
+        </button>
       </form>
     </div>
   </div>

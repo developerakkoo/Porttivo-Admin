@@ -1,41 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { 
-  LoadingController, 
-  ToastController,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonItem,
-  IonLabel,
-  IonInput,
-  IonButton,
-  IonSpinner
-} from '@ionic/angular/standalone';
+import { LoadingController, ToastController } from '@ionic/angular';
 import { AuthService } from '../../services/auth.service';
+import { SocketService } from '../../services/socket.service';
 
 @Component({
   selector: 'app-login',
+  standalone: false,
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonContent,
-    IonItem,
-    IonLabel,
-    IonInput,
-    IonButton,
-    IonSpinner
-  ]
 })
 export class LoginPage implements OnInit {
   loginForm: FormGroup;
@@ -44,6 +18,7 @@ export class LoginPage implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private authService: AuthService,
+    private socketService: SocketService,
     private router: Router,
     private loadingController: LoadingController,
     private toastController: ToastController
@@ -81,6 +56,7 @@ export class LoginPage implements OnInit {
         loading.dismiss();
         this.isLoading = false;
         if (response.success) {
+          this.socketService.connect();
           this.router.navigate(['/dashboard'], { replaceUrl: true });
         } else {
           this.showToast(response.message || 'Login failed', 'danger');

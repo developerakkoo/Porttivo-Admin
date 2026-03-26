@@ -1,8 +1,5 @@
-<ion-header [translucent]="true">
+<ion-content [fullscreen]="true" class="ion-padding">
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons>
     <ion-title>Fuel Cards</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="showCreateForm = !showCreateForm">
@@ -10,10 +7,7 @@
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
-</ion-header>
 
-<div class="ion-page" id="main-content">
-<ion-content [fullscreen]="true">
   <ion-card *ngIf="showCreateForm" class="create-card">
     <ion-card-header>
       <ion-card-title>Create Fuel Card</ion-card-title>
@@ -57,4 +51,3 @@
     <p>No fuel cards found</p>
   </div>
 </ion-content>
-</div>

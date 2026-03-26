@@ -1,22 +1,35 @@
-.alert-section, .calculation-card {
+// Colocated utilities (formerly global.scss)
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: var(--space-8) var(--space-6);
+  color: var(--color-text-secondary);
+
+  ion-icon {
+    font-size: 64px;
+    margin-bottom: var(--space-4);
+    opacity: 0.5;
+  }
+
+  p {
+    font-size: var(--text-base);
+    margin: 0;
+    color: var(--ion-text-color);
+  }
+}
+
+.alert-section,
+.calculation-card {
   margin: 16px;
 }
 
 .calculation-card {
   background: var(--ion-color-light);
   border: 1px solid var(--ion-border-color);
-}
-
-.loading-container, .empty-state {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 400px;
-  color: var(--ion-color-medium);
-}
-
-.empty-state ion-icon {
-  font-size: 64px;
-  margin-bottom: 16px;
 }

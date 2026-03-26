@@ -19,7 +19,7 @@
         <ion-label>Trips</ion-label>
       </ion-item>
       <ion-item button routerLink="/vehicles" routerDirection="forward">
-        <ion-icon name="bus" slot="start"></ion-icon>
+        <ion-icon name="cube" slot="start"></ion-icon>
         <ion-label>Vehicles</ion-label>
       </ion-item>
       <ion-item button routerLink="/fuel" routerDirection="forward">
@@ -41,6 +41,18 @@
       <ion-item button routerLink="/analytics" routerDirection="forward">
         <ion-icon name="bar-chart" slot="start"></ion-icon>
         <ion-label>Analytics</ion-label>
+      </ion-item>
+      <ion-item button routerLink="/customers" routerDirection="forward">
+        <ion-icon name="person-add" slot="start"></ion-icon>
+        <ion-label>Customers</ion-label>
+      </ion-item>
+      <ion-item button routerLink="/audit-logs" routerDirection="forward">
+        <ion-icon name="document-text" slot="start"></ion-icon>
+        <ion-label>Audit Logs</ion-label>
+      </ion-item>
+      <ion-item button routerLink="/notifications" routerDirection="forward">
+        <ion-icon name="notifications" slot="start"></ion-icon>
+        <ion-label>Send Notification</ion-label>
       </ion-item>
       <ion-item button (click)="logout()">
         <ion-icon name="log-out" slot="start"></ion-icon>

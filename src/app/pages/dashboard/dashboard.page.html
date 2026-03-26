@@ -1,115 +1,72 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons>
-    <ion-title>Dashboard</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="refresh()">
-        <ion-icon name="refresh"></ion-icon>
-      </ion-button>
-      <ion-button (click)="logout()">
-        <ion-icon name="log-out"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-
-<div class="ion-page" id="main-content">
-<ion-content [fullscreen]="true">
-  <div class="dashboard-container">
-    <div class="welcome-section" *ngIf="currentAdmin">
-      <h2>Welcome, {{ currentAdmin.username }}</h2>
-      <p>Here's what's happening in your system</p>
-    </div>
-
-    <div *ngIf="loading" class="loading-container">
-      <ion-spinner name="crescent"></ion-spinner>
-      <p>Loading dashboard...</p>
-    </div>
-
-    <div *ngIf="!loading && stats" class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-icon">
-          <ion-icon name="people"></ion-icon>
-        </div>
-        <div class="stat-value">{{ stats.totalTransporters }}</div>
-        <div class="stat-label">Total Transporters</div>
-        <div class="stat-sublabel">{{ stats.activeTransporters }} active</div>
+<ion-content [fullscreen]="true" class="ion-padding">
+<div class="dashboard-page page-container">
+  <div class="page-header-section">
+    <h1>Dashboard</h1>
+    <p>Key metrics and activity across your logistics platform</p>
+    <div class="date-filter-bar">
+      <div class="date-inputs">
+        <label class="label-text">Start</label>
+        <input type="date" [(ngModel)]="startDate" (change)="applyDateFilter()" />
       </div>
-
-      <div class="stat-card">
-        <div class="stat-icon">
-          <ion-icon name="car"></ion-icon>
-        </div>
-        <div class="stat-value">{{ stats.totalDrivers }}</div>
-        <div class="stat-label">Total Drivers</div>
-        <div class="stat-sublabel">{{ stats.activeDrivers }} active</div>
+      <div class="date-inputs">
+        <label class="label-text">End</label>
+        <input type="date" [(ngModel)]="endDate" (change)="applyDateFilter()" />
       </div>
-
-      <div class="stat-card">
-        <div class="stat-icon">
-          <ion-icon name="bus"></ion-icon>
-        </div>
-        <div class="stat-value">{{ stats.totalVehicles }}</div>
-        <div class="stat-label">Total Vehicles</div>
-        <div class="stat-sublabel">{{ stats.activeVehicles }} active</div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon">
-          <ion-icon name="map"></ion-icon>
-        </div>
-        <div class="stat-value">{{ stats.totalTrips }}</div>
-        <div class="stat-label">Total Trips</div>
-        <div class="stat-sublabel">{{ stats.activeTrips }} active</div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon">
-          <ion-icon name="flame"></ion-icon>
-        </div>
-        <div class="stat-value">₹{{ formatNumber(stats.totalFuelValue) }}</div>
-        <div class="stat-label">Total Fuel Value</div>
-        <div class="stat-sublabel">₹{{ formatNumber(stats.todayFuelValue) }} today</div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon">
-          <ion-icon name="storefront"></ion-icon>
-        </div>
-        <div class="stat-value">{{ stats.totalPumpOwners }}</div>
-        <div class="stat-label">Pump Owners</div>
-        <div class="stat-sublabel">{{ stats.activePumpOwners }} active</div>
-      </div>
-
-      <div class="stat-card alert-card" *ngIf="stats.pendingSettlements > 0">
-        <div class="stat-icon">
-          <ion-icon name="cash"></ion-icon>
-        </div>
-        <div class="stat-value">{{ stats.pendingSettlements }}</div>
-        <div class="stat-label">Pending Settlements</div>
-        <div class="stat-sublabel">Requires attention</div>
-      </div>
-
-      <div class="stat-card alert-card" *ngIf="stats.pendingFraudAlerts > 0">
-        <div class="stat-icon">
-          <ion-icon name="warning"></ion-icon>
-        </div>
-        <div class="stat-value">{{ stats.pendingFraudAlerts }}</div>
-        <div class="stat-label">Fraud Alerts</div>
-        <div class="stat-sublabel">Needs review</div>
-      </div>
-
-      <div class="stat-card alert-card" *ngIf="stats.expiringDocuments > 0">
-        <div class="stat-icon">
-          <ion-icon name="document"></ion-icon>
-        </div>
-        <div class="stat-value">{{ stats.expiringDocuments }}</div>
-        <div class="stat-label">Expiring Documents</div>
-        <div class="stat-sublabel">Within 30 days</div>
-      </div>
+      <button class="btn-primary" (click)="refresh()">
+        <ion-icon name="refresh-outline"></ion-icon>
+        Refresh
+      </button>
     </div>
   </div>
-</ion-content>
+
+  <div *ngIf="loading" class="loading-section">
+    <app-skeleton-loader [rows]="4" [widths]="['25%', '25%', '25%', '25%']" [fullWidth]="true"></app-skeleton-loader>
+  </div>
+
+  <div *ngIf="!loading && stats" class="dashboard-content">
+    <div class="stats-grid">
+      <app-kpi-card [value]="stats.totalTransporters" label="Transporters" [sublabel]="stats.activeTransporters + ' active'" icon="people"></app-kpi-card>
+      <app-kpi-card [value]="stats.totalDrivers" label="Drivers" [sublabel]="stats.activeDrivers + ' active'" icon="car"></app-kpi-card>
+      <app-kpi-card [value]="stats.totalVehicles" label="Fleet" [sublabel]="stats.activeVehicles + ' active'" icon="cube"></app-kpi-card>
+      <app-kpi-card [value]="stats.totalTrips" label="Total Trips" [sublabel]="stats.activeTrips + ' active'" icon="map"></app-kpi-card>
+      <app-kpi-card [value]="'₹' + formatNumber(stats.totalFuelValue)" label="Fuel Value" [sublabel]="'₹' + formatNumber(stats.todayFuelValue) + ' today'" icon="flame"></app-kpi-card>
+      <app-kpi-card [value]="stats.totalPumpOwners" label="Pump Owners" [sublabel]="stats.activePumpOwners + ' active'" icon="storefront"></app-kpi-card>
+      <app-kpi-card *ngIf="stats.pendingSettlements > 0" [value]="stats.pendingSettlements" label="Pending Settlements" sublabel="Requires attention" icon="cash" [alert]="true"></app-kpi-card>
+      <app-kpi-card *ngIf="stats.pendingFraudAlerts > 0" [value]="stats.pendingFraudAlerts" label="Fraud Alerts" sublabel="Needs review" icon="warning" [alert]="true"></app-kpi-card>
+      <app-kpi-card *ngIf="stats.expiringDocuments > 0" [value]="stats.expiringDocuments" label="Expiring Docs" sublabel="Within 30 days" icon="document" [alert]="true"></app-kpi-card>
+    </div>
+
+    <div class="charts-row" *ngIf="!loading && chartData.labels && chartData.labels.length">
+      <div class="chart-card enterprise-card">
+        <h3 class="section-title">Trips Overview</h3>
+        <div class="chart-container">
+          <canvas baseChart
+            [data]="chartData"
+            [options]="chartOptions"
+            type="line">
+          </canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="recent-activities-section" *ngIf="!loading && recentActivities.length > 0">
+      <h3 class="section-title">Recent Activity</h3>
+      <div class="activity-list enterprise-card">
+        <div *ngFor="let log of recentActivities" class="activity-item">
+          <div class="activity-content">
+            <span class="activity-action">{{ log.userType }} — {{ log.action }} {{ log.resource }}</span>
+            <span class="activity-meta">{{ formatDate(log.createdAt) }}</span>
+          </div>
+          <app-status-badge [status]="log.result"></app-status-badge>
+        </div>
+      </div>
+    </div>
+
+    <app-empty-state *ngIf="!loading && !stats"
+      icon="analytics-outline"
+      title="No data"
+      message="Dashboard metrics will appear once the system has activity."
+    ></app-empty-state>
+  </div>
 </div>
+</ion-content>

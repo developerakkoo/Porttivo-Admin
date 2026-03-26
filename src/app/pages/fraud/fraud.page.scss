@@ -1,11 +1,110 @@
-.stats-section {
-  padding: 16px;
+// Colocated utilities (formerly global.scss)
+.filter-bar {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--ion-card-background);
+  border: 1px solid var(--ion-border-color);
+  border-radius: var(--border-radius-lg);
+  margin-bottom: var(--space-6);
+  flex-wrap: wrap;
+  align-items: center;
+
+  .search-input,
+  input[type="text"],
+  input[type="search"] {
+    flex: 1;
+    min-width: 220px;
+    padding: 10px 14px;
+    border: 1px solid var(--ion-border-color);
+    border-radius: var(--border-radius);
+    font-size: var(--text-sm);
+    background: var(--ion-card-background);
+    color: var(--ion-text-color);
+
+    &::placeholder {
+      color: var(--color-text-secondary);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 2px rgba(var(--ion-color-primary-rgb), 0.2);
+    }
+  }
+
+  .filter-select,
+  select {
+    padding: 10px 14px;
+    border: 1px solid var(--ion-border-color);
+    border-radius: var(--border-radius);
+    font-size: var(--text-sm);
+    background: var(--ion-card-background);
+    color: var(--ion-text-color);
+    min-width: 140px;
+    cursor: pointer;
+
+    &:focus {
+      outline: none;
+      border-color: var(--color-primary);
+    }
+  }
+
+  .filter-input,
+  input[type="date"] {
+    padding: 10px 14px;
+    border: 1px solid var(--ion-border-color);
+    border-radius: var(--border-radius);
+    font-size: var(--text-sm);
+    background: var(--ion-card-background);
+    color: var(--ion-text-color);
+    min-width: 140px;
+
+    &:focus {
+      outline: none;
+      border-color: var(--color-primary);
+    }
+  }
+
+  ion-searchbar {
+    flex: 1;
+    min-width: 200px;
+    --background: var(--ion-card-background);
+    --border-radius: var(--border-radius);
+  }
+
+  ion-select {
+    min-width: 150px;
+  }
 }
 
-.filter-bar {
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: var(--space-8) var(--space-6);
+  color: var(--color-text-secondary);
+
+  ion-icon {
+    font-size: 64px;
+    margin-bottom: var(--space-4);
+    opacity: 0.5;
+  }
+
+  p {
+    font-size: var(--text-base);
+    margin: 0;
+    color: var(--ion-text-color);
+  }
+}
+
+.stats-section {
   padding: 16px;
-  background: var(--ion-color-light);
-  border-bottom: 1px solid var(--ion-border-color);
 }
 
 .fraud-badge {
@@ -16,18 +115,4 @@
   border-radius: 4px;
   font-size: 0.75rem;
   margin-right: 4px;
-}
-
-.loading-container, .empty-state {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 400px;
-  color: var(--ion-color-medium);
-}
-
-.empty-state ion-icon {
-  font-size: 64px;
-  margin-bottom: 16px;
 }

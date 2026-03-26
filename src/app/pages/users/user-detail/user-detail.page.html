@@ -1,0 +1,323 @@
+<ion-content [fullscreen]="true" class="ion-padding">
+<div class="user-detail-page page-container">
+  <div class="detail-toolbar">
+    <button type="button" class="btn-back" (click)="goBack()">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+      <span>Users</span>
+    </button>
+    <div class="detail-actions" *ngIf="user && !loading">
+      <button type="button" class="btn-secondary" (click)="openStatusUpdate()">Change status</button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading-section">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <ng-container *ngIf="!loading && user">
+    <div class="detail-hero enterprise-card">
+      <div class="hero-main">
+        <h1>{{ user.name || 'User' }}</h1>
+        <p class="hero-meta" *ngIf="user.mobile">{{ user.mobile }}</p>
+        <p class="hero-meta" *ngIf="user.email">{{ user.email }}</p>
+        <p class="hero-meta muted" *ngIf="userType === 'customer' && user.tripCount != null">
+          {{ user.tripCount }} trips total · {{ user.activeTripCount ?? 0 }} active / in-progress
+        </p>
+      </div>
+      <app-status-badge [status]="user.status"></app-status-badge>
+    </div>
+
+    <!-- Transporter -->
+    <div class="detail-sections" *ngIf="userType === 'transporter'">
+      <section class="enterprise-card detail-card">
+        <h2>Account</h2>
+        <dl class="detail-dl">
+          <dt>Company</dt>
+          <dd>{{ user.company || '—' }}</dd>
+          <dt>Wallet</dt>
+          <dd><ion-icon name="wallet-outline"></ion-icon> ₹{{ formatNumber(user.walletBalance) }}</dd>
+          <dt>Access</dt>
+          <dd>{{ user.hasAccess ? 'Enabled' : 'Disabled' }}</dd>
+          <dt>PIN set</dt>
+          <dd>{{ user.hasPinSet ? 'Yes' : 'No' }}</dd>
+          <dt>Created</dt>
+          <dd>{{ formatDate(user.createdAt) }}</dd>
+        </dl>
+        <div class="detail-card-actions">
+          <button type="button" class="btn-secondary" (click)="viewTripsForTransporter()">
+            <ion-icon name="open-outline"></ion-icon>
+            Open trips (filtered)
+          </button>
+        </div>
+      </section>
+      <section class="enterprise-card detail-card" *ngIf="user.totalVehicles != null || user.totalDrivers != null || user.totalTrips != null">
+        <h2>Summary</h2>
+        <dl class="detail-dl">
+          <dt>Vehicles</dt>
+          <dd>{{ user.totalVehicles ?? '—' }}</dd>
+          <dt>Drivers</dt>
+          <dd>{{ user.totalDrivers ?? '—' }}</dd>
+          <dt>Trips</dt>
+          <dd>{{ user.totalTrips ?? '—' }}</dd>
+        </dl>
+      </section>
+    </div>
+
+    <!-- Driver -->
+    <div class="detail-sections" *ngIf="userType === 'driver'">
+      <section class="enterprise-card detail-card">
+        <h2>Profile</h2>
+        <dl class="detail-dl">
+          <dt>Transporter</dt>
+          <dd>{{ user.transporter?.company || user.transporter?.name || '—' }}</dd>
+          <dt>Risk</dt>
+          <dd>{{ user.riskLevel || '—' }}</dd>
+          <dt>Wallet</dt>
+          <dd>₹{{ formatNumber(user.walletBalance) }}</dd>
+          <dt>Trips (total / active)</dt>
+          <dd>{{ user.totalTrips ?? 0 }} / {{ user.activeTrips ?? 0 }}</dd>
+          <dt>Created</dt>
+          <dd>{{ formatDate(user.createdAt) }}</dd>
+        </dl>
+        <div class="detail-card-actions">
+          <button type="button" class="btn-secondary" (click)="viewTripsForDriver()">
+            <ion-icon name="open-outline"></ion-icon>
+            Open trips (filtered)
+          </button>
+        </div>
+      </section>
+      <section class="enterprise-card detail-card">
+        <h2>Recent activity</h2>
+        <div *ngIf="timelineLoading" class="inline-loading"><ion-spinner name="crescent"></ion-spinner></div>
+        <ul class="timeline-list" *ngIf="!timelineLoading && timeline.length">
+          <li *ngFor="let ev of timeline.slice(0, 25)">
+            <span class="tl-date">{{ formatDate(ev.date) }}</span>
+            <span class="tl-event">{{ ev.event }}</span>
+            <span class="tl-trip" *ngIf="ev.tripId">{{ ev.tripId }}</span>
+          </li>
+        </ul>
+        <p *ngIf="!timelineLoading && !timeline.length" class="muted">No timeline events.</p>
+      </section>
+    </div>
+
+    <!-- Pump owner -->
+    <div class="detail-sections" *ngIf="userType === 'pumpOwner'">
+      <section class="enterprise-card detail-card">
+        <h2>Pump</h2>
+        <dl class="detail-dl">
+          <dt>Pump name</dt>
+          <dd>{{ user.pumpName || '—' }}</dd>
+          <dt>Location</dt>
+          <dd>{{ user.location || '—' }}</dd>
+          <dt>Commission</dt>
+          <dd>{{ user.commissionRate ?? '—' }}%</dd>
+          <dt>Wallet</dt>
+          <dd>₹{{ formatNumber(user.walletBalance) }}</dd>
+          <dt>Fuel value (completed)</dt>
+          <dd>₹{{ formatNumber(user.totalFuelValue) }}</dd>
+          <dt>Drivers visited</dt>
+          <dd>{{ user.totalDriversVisited ?? '—' }}</dd>
+          <dt>Transporters</dt>
+          <dd>{{ user.totalTransporters ?? '—' }}</dd>
+          <dt>Created</dt>
+          <dd>{{ formatDate(user.createdAt) }}</dd>
+        </dl>
+      </section>
+    </div>
+
+    <!-- Pump staff -->
+    <div class="detail-sections" *ngIf="userType === 'pumpStaff'">
+      <section class="enterprise-card detail-card">
+        <h2>Assignment</h2>
+        <dl class="detail-dl">
+          <dt>Pump owner</dt>
+          <dd>{{ user.pumpOwner?.pumpName || user.pumpOwner?.name || '—' }}</dd>
+          <dt>Transactions</dt>
+          <dd>{{ user.totalTransactions ?? 0 }}</dd>
+          <dt>Created</dt>
+          <dd>{{ formatDate(user.createdAt) }}</dd>
+        </dl>
+      </section>
+      <section class="enterprise-card detail-card" *ngIf="user.permissions">
+        <h2>Permissions</h2>
+        <ul class="perm-list">
+          <li *ngIf="user.permissions.canProcessFuel !== undefined">Process fuel: {{ user.permissions.canProcessFuel ? 'Yes' : 'No' }}</li>
+          <li *ngIf="user.permissions.canViewTransactions !== undefined">View transactions: {{ user.permissions.canViewTransactions ? 'Yes' : 'No' }}</li>
+          <li *ngIf="user.permissions.canViewSettlements !== undefined">View settlements: {{ user.permissions.canViewSettlements ? 'Yes' : 'No' }}</li>
+          <li *ngIf="user.permissions.canManageStaff !== undefined">Manage staff: {{ user.permissions.canManageStaff ? 'Yes' : 'No' }}</li>
+        </ul>
+      </section>
+    </div>
+
+    <!-- Company user -->
+    <div class="detail-sections" *ngIf="userType === 'companyUser'">
+      <section class="enterprise-card detail-card">
+        <h2>Organization</h2>
+        <dl class="detail-dl">
+          <dt>Transporter</dt>
+          <dd>{{ user.transporter?.company || user.transporter?.name || '—' }}</dd>
+          <dt>Access</dt>
+          <dd>{{ user.hasAccess ? 'Enabled' : 'Disabled' }}</dd>
+          <dt>PIN set</dt>
+          <dd>{{ user.hasPinSet ? 'Yes' : 'No' }}</dd>
+          <dt>Created</dt>
+          <dd>{{ formatDate(user.createdAt) }}</dd>
+        </dl>
+        <div class="detail-card-actions">
+          <button type="button" class="btn-secondary" (click)="viewTripsForTransporter()">
+            <ion-icon name="open-outline"></ion-icon>
+            Open transporter trips
+          </button>
+        </div>
+      </section>
+      <section class="enterprise-card detail-card" *ngIf="user.permissions?.length">
+        <h2>Permissions</h2>
+        <ul class="perm-tags">
+          <li *ngFor="let p of user.permissions">{{ p }}</li>
+        </ul>
+      </section>
+    </div>
+
+    <!-- Customer -->
+    <div class="detail-sections" *ngIf="userType === 'customer'">
+      <section class="enterprise-card detail-card">
+        <h2>Profile</h2>
+        <dl class="detail-dl">
+          <dt>Registered</dt>
+          <dd>{{ user.isRegistered ? 'Yes' : 'No' }}</dd>
+          <dt>Trips (total)</dt>
+          <dd>{{ user.tripCount ?? '—' }}</dd>
+          <dt>Active / in-progress</dt>
+          <dd>{{ user.activeTripCount ?? '—' }}</dd>
+          <dt>Created</dt>
+          <dd>{{ formatDate(user.createdAt) }}</dd>
+          <dt>Updated</dt>
+          <dd>{{ formatDate(user.updatedAt) }}</dd>
+        </dl>
+        <div class="detail-card-actions">
+          <button type="button" class="btn-secondary" (click)="viewTripsForCustomer()">
+            <ion-icon name="open-outline"></ion-icon>
+            Open trips (filtered)
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <!-- Embedded trips -->
+    <div class="detail-sections" *ngIf="showTripsSection()">
+      <section class="enterprise-card detail-card">
+        <h2>Shipments</h2>
+        <div *ngIf="tripsLoading" class="inline-loading"><ion-spinner name="crescent"></ion-spinner></div>
+        <ng-container *ngIf="!tripsLoading">
+          <p class="muted trip-summary">
+            <strong>{{ activeTripsTotal }}</strong> with status ACTIVE ·
+            <strong>{{ recentTripsTotal }}</strong> recent (all statuses, first page)
+          </p>
+
+          <h3 class="subsection-title">Active trips</h3>
+          <div class="table-wrap" *ngIf="activeTrips.length">
+            <table class="data-mini">
+              <thead>
+                <tr>
+                  <th>Trip ID</th>
+                  <th>Status</th>
+                  <th>Created</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let t of activeTrips">
+                  <td>{{ t.tripId || t._id || t.id }}</td>
+                  <td><app-status-badge [status]="t.status"></app-status-badge></td>
+                  <td>{{ formatDate(t.createdAt) }}</td>
+                  <td><button type="button" class="linkish" (click)="openTripDetail(t)">View</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p *ngIf="!activeTrips.length" class="muted">No trips in ACTIVE status.</p>
+
+          <h3 class="subsection-title">Recent trips</h3>
+          <div class="table-wrap" *ngIf="recentTrips.length">
+            <table class="data-mini">
+              <thead>
+                <tr>
+                  <th>Trip ID</th>
+                  <th>Status</th>
+                  <th>Created</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let t of recentTrips">
+                  <td>{{ t.tripId || t._id || t.id }}</td>
+                  <td><app-status-badge [status]="t.status"></app-status-badge></td>
+                  <td>{{ formatDate(t.createdAt) }}</td>
+                  <td><button type="button" class="linkish" (click)="openTripDetail(t)">View</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </ng-container>
+      </section>
+    </div>
+
+    <!-- Fuel transactions (driver, pump owner, pump staff) -->
+    <div class="detail-sections" *ngIf="showFuelSection()">
+      <section class="enterprise-card detail-card">
+        <h2>Fuel transactions</h2>
+        <div *ngIf="fuelLoading" class="inline-loading"><ion-spinner name="crescent"></ion-spinner></div>
+        <div class="table-wrap" *ngIf="!fuelLoading && fuelTransactions.length">
+          <table class="data-mini">
+            <thead>
+              <tr>
+                <th>When</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Vehicle</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let tx of fuelTransactions">
+                <td>{{ formatDate(tx.createdAt) }}</td>
+                <td>₹{{ formatNumber(tx.amount) }}</td>
+                <td>{{ tx.status || '—' }}</td>
+                <td>{{ tx.vehicleNumber || '—' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p *ngIf="!fuelLoading && !fuelTransactions.length" class="muted">No fuel transactions found.</p>
+        <div class="list-pagination" *ngIf="fuelPagination.pages > 1">
+          <button type="button" class="btn-secondary" [disabled]="fuelPagination.page <= 1" (click)="goFuelPage(-1)">Previous</button>
+          <span class="pagination-info">Page {{ fuelPagination.page }} of {{ fuelPagination.pages }}</span>
+          <button type="button" class="btn-secondary" [disabled]="fuelPagination.page >= fuelPagination.pages" (click)="goFuelPage(1)">Next</button>
+        </div>
+      </section>
+    </div>
+
+    <!-- System audit logs -->
+    <div class="detail-sections" *ngIf="showAuditSection()">
+      <section class="enterprise-card detail-card">
+        <h2><ion-icon name="document-text-outline"></ion-icon> Activity log</h2>
+        <p class="muted small">Actions recorded for this user (system audit).</p>
+        <div *ngIf="auditLoading" class="inline-loading"><ion-spinner name="crescent"></ion-spinner></div>
+        <ul class="audit-list" *ngIf="!auditLoading && auditLogs.length">
+          <li *ngFor="let log of auditLogs">
+            <span class="audit-date">{{ formatDate(log.createdAt) }}</span>
+            <span class="audit-action">{{ log.action }}</span>
+            <span class="audit-resource">{{ log.resource }}</span>
+            <span class="audit-result" [class.audit-ok]="log.result === 'SUCCESS'">{{ log.result }}</span>
+          </li>
+        </ul>
+        <p *ngIf="!auditLoading && !auditLogs.length" class="muted">No audit entries for this user.</p>
+        <div class="list-pagination" *ngIf="auditPagination.pages > 1">
+          <button type="button" class="btn-secondary" [disabled]="auditPagination.page <= 1" (click)="goAuditPage(-1)">Previous</button>
+          <span class="pagination-info">Page {{ auditPagination.page }} of {{ auditPagination.pages }}</span>
+          <button type="button" class="btn-secondary" [disabled]="auditPagination.page >= auditPagination.pages" (click)="goAuditPage(1)">Next</button>
+        </div>
+      </section>
+    </div>
+  </ng-container>
+</div>
+</ion-content>

@@ -1,0 +1,48 @@
+<div class="admin-layout" [class.sidebar-collapsed]="sidebarCollapsed">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <a routerLink="/dashboard" class="logo">
+        <span class="logo-icon">P</span>
+        <span class="logo-text" *ngIf="!sidebarCollapsed">Porttivo</span>
+      </a>
+      <button class="collapse-btn" (click)="toggleSidebar()" [attr.aria-label]="sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+        <ion-icon [name]="sidebarCollapsed ? 'chevron-forward' : 'chevron-back-outline'"></ion-icon>
+      </button>
+    </div>
+    <nav class="sidebar-nav">
+      <a *ngFor="let item of navItems" 
+         [routerLink]="item.path" 
+         routerLinkActive="active"
+         [routerLinkActiveOptions]="{exact: item.path === '/dashboard'}"
+         class="nav-item"
+         (click)="!canShowItem(item) && $event.preventDefault()"
+         [class.hidden]="!canShowItem(item)">
+        <ion-icon [name]="item.icon"></ion-icon>
+        <span class="nav-label" *ngIf="!sidebarCollapsed">{{ item.label }}</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <header class="top-header">
+      <button class="menu-toggle" (click)="toggleSidebar()">
+        <ion-icon name="menu"></ion-icon>
+      </button>
+      <div class="header-spacer"></div>
+      <div class="header-actions">
+        <span class="admin-info" *ngIf="admin">
+          {{ admin.username }}
+          <span class="role-badge">{{ admin.role }}</span>
+        </span>
+        <button class="logout-btn" (click)="logout()" title="Logout">
+          <ion-icon name="log-out-outline"></ion-icon>
+        </button>
+      </div>
+    </header>
+    <div class="page-content">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>

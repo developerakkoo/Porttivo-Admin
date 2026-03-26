@@ -1,16 +1,110 @@
+// Colocated utilities (formerly global.scss)
+
+.page-container,
+.users-page {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  width: 100%;
+}
+
+.page-header-section {
+  margin-bottom: var(--space-6);
+
+  h1 {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-bold);
+    font-family: var(--font-heading);
+    color: var(--ion-text-color);
+    margin: 0 0 var(--space-1) 0;
+  }
+
+  p {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--space-5) 0;
+  }
+}
+
+// Tab styling lives in global.scss (.users-tabs / .admin-tabs-filter). Page-only tweaks:
+.users-tabs .users-tab-label {
+  white-space: nowrap;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
 .filter-bar {
   display: flex;
-  gap: 12px;
-  padding: 16px;
-  background: var(--ion-color-light);
-  border-bottom: 1px solid var(--ion-border-color);
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--ion-card-background);
+  border: 1px solid var(--ion-border-color);
+  border-radius: var(--border-radius-lg);
+  margin-bottom: var(--space-6);
   flex-wrap: wrap;
+  align-items: center;
+  box-shadow: var(--shadow-sm);
+
+  .search-input,
+  input[type="text"],
+  input[type="search"] {
+    flex: 1;
+    min-width: 220px;
+    padding: 10px 14px;
+    border: 1px solid var(--ion-border-color);
+    border-radius: var(--border-radius);
+    font-size: var(--text-sm);
+    background: var(--ion-card-background);
+    color: var(--ion-text-color);
+
+    &::placeholder {
+      color: var(--color-text-secondary);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 2px rgba(var(--ion-color-primary-rgb), 0.2);
+    }
+  }
+
+  .filter-select,
+  select {
+    padding: 10px 14px;
+    border: 1px solid var(--ion-border-color);
+    border-radius: var(--border-radius);
+    font-size: var(--text-sm);
+    background: var(--ion-card-background);
+    color: var(--ion-text-color);
+    min-width: 140px;
+    cursor: pointer;
+
+    &:focus {
+      outline: none;
+      border-color: var(--color-primary);
+    }
+  }
+
+  .filter-input,
+  input[type="date"] {
+    padding: 10px 14px;
+    border: 1px solid var(--ion-border-color);
+    border-radius: var(--border-radius);
+    font-size: var(--text-sm);
+    background: var(--ion-card-background);
+    color: var(--ion-text-color);
+    min-width: 140px;
+
+    &:focus {
+      outline: none;
+      border-color: var(--color-primary);
+    }
+  }
 
   ion-searchbar {
     flex: 1;
     min-width: 200px;
-    --background: #ffffff;
-    --border-radius: 4px;
+    --background: var(--ion-card-background);
+    --border-radius: var(--border-radius);
   }
 
   ion-select {
@@ -18,64 +112,214 @@
   }
 }
 
-ion-segment {
-  margin: 16px;
-  border: 1px solid var(--ion-border-color);
-  border-radius: 4px;
+.filter-bar.filter-bar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--space-3);
+  align-items: stretch;
 }
 
-ion-list {
-  background: transparent;
+.filter-bar.filter-bar-grid ion-searchbar {
+  grid-column: 1 / -1;
+  padding: 0;
+  min-height: 48px;
+  --background: var(--ion-color-light);
+  --border-radius: var(--border-radius);
+  --box-shadow: none;
+  --color: var(--ion-text-color);
+  --placeholder-color: var(--color-text-secondary);
+  --icon-color: var(--color-text-secondary);
+  --clear-button-color: var(--ion-color-medium);
+  --cancel-button-color: var(--ion-color-primary);
 }
 
-ion-item {
+.filter-bar.filter-bar-grid ion-select {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  --padding-top: 10px;
+  --padding-bottom: 10px;
+  --border-radius: var(--border-radius);
   --background: var(--ion-card-background);
-  --border-color: var(--ion-border-color);
-  margin: 8px 16px;
-  border-radius: 4px;
   border: 1px solid var(--ion-border-color);
+  border-radius: var(--border-radius);
+  font-size: var(--text-sm);
+  color: var(--ion-text-color);
+}
 
-  h2 {
-    font-weight: 600;
-    color: var(--ion-text-color);
-  }
+.loading-section {
+  background: var(--ion-card-background);
+  border: 1px solid var(--ion-border-color);
+  border-radius: var(--border-radius-lg);
+  padding: var(--space-6);
+}
 
-  p {
-    color: var(--ion-color-medium);
-    font-size: 0.875rem;
-    margin: 4px 0;
+.enterprise-card {
+  background: var(--ion-card-background);
+  border: 1px solid var(--ion-border-color);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition-fast);
+
+  &:hover {
+    box-shadow: var(--shadow-md);
   }
 }
 
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
-  color: var(--ion-color-medium);
+.users-list-container.enterprise-card {
+  overflow: hidden;
+}
+
+.users-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--ion-border-color);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: var(--ion-color-light);
+  }
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.user-name {
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--ion-text-color);
+}
+
+.user-meta {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.btn-view {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary);
+  background: rgba(var(--ion-color-primary-rgb), 0.08);
+  border: 1px solid rgba(var(--ion-color-primary-rgb), 0.35);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-family: var(--font-primary);
+  white-space: nowrap;
 
   ion-icon {
-    font-size: 64px;
-    margin-bottom: 16px;
+    font-size: 18px;
   }
 
-  p {
-    font-size: 1rem;
-    margin: 0;
+  &:hover {
+    background: rgba(var(--ion-color-primary-rgb), 0.14);
   }
 }
 
-.loading-container {
-  display: flex;
-  justify-content: center;
+.btn-icon {
+  padding: var(--space-2);
+  min-width: 36px;
+
+  ion-icon {
+    font-size: 20px;
+  }
+}
+
+.user-actions .btn-ghost {
+  display: inline-flex;
   align-items: center;
-  min-height: 200px;
+  gap: var(--space-2);
+  padding: 8px 16px;
+  background: transparent;
+  color: var(--ion-text-color);
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  font-family: var(--font-primary);
+
+  &:hover:not(:disabled) {
+    background: var(--ion-color-light);
+  }
 }
 
-ion-footer {
-  ion-toolbar {
-    --background: var(--ion-color-light);
+// Empty state: vertical rhythm like dashboard sections
+.users-list-container > app-empty-state {
+  display: block;
+  padding: var(--space-8) var(--space-5);
+}
+
+.list-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-5);
+  border-top: 1px solid var(--ion-border-color);
+  background: var(--ion-color-light);
+  flex-wrap: wrap;
+  gap: var(--space-3);
+
+  .pagination-info {
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    font-weight: var(--font-weight-medium);
   }
 
-  ion-label {
-    padding: 0 16px;
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: 10px 20px;
+    background: transparent;
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary);
+    border-radius: var(--border-radius);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: background var(--transition-fast), border-color var(--transition-fast);
+    font-family: var(--font-primary);
+
+    &:hover:not(:disabled) {
+      background: rgba(var(--ion-color-primary-rgb), 0.06);
+      border-color: var(--ion-color-primary-shade);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
   }
 }

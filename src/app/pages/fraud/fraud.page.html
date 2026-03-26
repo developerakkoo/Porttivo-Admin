@@ -1,14 +1,6 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons>
-    <ion-title>Fraud Detection</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" class="ion-padding">
+  <h1 class="page-title">Fraud Detection</h1>
 
-<div class="ion-page" id="main-content">
-<ion-content [fullscreen]="true">
   <div *ngIf="stats" class="stats-section">
     <ion-card>
       <ion-card-header>
@@ -56,4 +48,3 @@
     <p>No fraud alerts found</p>
   </div>
 </ion-content>
-</div>

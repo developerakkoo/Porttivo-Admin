@@ -1,0 +1,38 @@
+// Colocated utilities (formerly global.scss)
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.trip-detail {
+  padding: 16px;
+}
+
+.status-card ion-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pod-image {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: var(--border-radius, 8px);
+  object-fit: contain;
+  margin-bottom: 12px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.waiting-location {
+  margin: 8px 0 0;
+  font-size: 0.875rem;
+  color: var(--ion-color-step-600);
+}

@@ -6,12 +6,7 @@ import { FuelCardsPageRoutingModule } from './fuel-cards-routing.module';
 import { FuelCardsPage } from './fuel-cards.page';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    FuelCardsPageRoutingModule,
-    FuelCardsPage
-  ]
+  declarations: [FuelCardsPage],
+  imports: [CommonModule, FormsModule, IonicModule, FuelCardsPageRoutingModule],
 })
 export class FuelCardsPageModule {}

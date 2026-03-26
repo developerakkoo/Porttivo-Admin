@@ -6,12 +6,7 @@ import { SettlementsPageRoutingModule } from './settlements-routing.module';
 import { SettlementsPage } from './settlements.page';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    SettlementsPageRoutingModule,
-    SettlementsPage
-  ]
+  declarations: [SettlementsPage],
+  imports: [CommonModule, FormsModule, IonicModule, SettlementsPageRoutingModule],
 })
 export class SettlementsPageModule {}

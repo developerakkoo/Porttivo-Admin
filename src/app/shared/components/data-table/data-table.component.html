@@ -1,0 +1,69 @@
+<div class="data-table-wrapper">
+  <div class="table-scroll">
+    <table class="data-table" [class.striped]="striped">
+      <thead>
+        <tr>
+          <th
+            *ngFor="let col of columns"
+            [class.sortable]="col.sortable"
+            [style.width]="col.width"
+            (click)="col.sortable && sort(col)"
+          >
+            {{ col.label }}
+            <ion-icon
+              *ngIf="col.sortable && sortKey === col.key"
+              [name]="sortDir === 'asc' ? 'arrow-up' : 'arrow-down'"
+            ></ion-icon>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let row of data"
+          [class.clickable]="rowLinkFn || rowClick.observed"
+          [routerLink]="rowLinkFn ? rowLinkFn(row) : null"
+          (click)="!rowLinkFn && rowClick.observed && rowClick.emit(row)"
+        >
+          <td *ngFor="let col of columns">
+            <ng-container *ngIf="col.type === 'status'">
+              <app-status-badge [status]="getValue(row, col.key)"></app-status-badge>
+            </ng-container>
+            <ng-container *ngIf="col.type !== 'status'">
+              {{ formatValue(getValue(row, col.key), col) }}
+            </ng-container>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div *ngIf="loading" class="table-loading-overlay">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+  <div *ngIf="!loading && data.length === 0" class="table-empty">
+    {{ emptyMessage }}
+  </div>
+  <div
+    *ngIf="showPagination && pages > 1 && !loading"
+    class="table-pagination"
+  >
+    <span class="pagination-info">
+      Page {{ page }} of {{ pages }} ({{ total }} total)
+    </span>
+    <div class="pagination-buttons">
+      <button
+        class="page-btn"
+        [disabled]="page <= 1"
+        (click)="goToPage(page - 1)"
+      >
+        Prev
+      </button>
+      <button
+        class="page-btn"
+        [disabled]="page >= pages"
+        (click)="goToPage(page + 1)"
+      >
+        Next
+      </button>
+    </div>
+  </div>
+</div>

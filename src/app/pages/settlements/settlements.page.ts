@@ -1,54 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../../services/api.service';
-import { 
-  LoadingController, 
-  ToastController, 
-  AlertController,
-  IonHeader,
-  IonToolbar,
-  IonButtons,
-  IonMenuButton,
-  IonTitle,
-  IonContent,
-  IonCard,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardContent,
-  IonSpinner,
-  IonList,
-  IonItem,
-  IonLabel,
-  IonBadge,
-  IonButton,
-  IonIcon
-} from '@ionic/angular/standalone';
+import { LoadingController, ToastController, AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-settlements',
+  standalone: false,
   templateUrl: './settlements.page.html',
   styleUrls: ['./settlements.page.scss'],
-  standalone: true,
-  imports: [
-    CommonModule,
-    IonHeader,
-    IonToolbar,
-    IonButtons,
-    IonMenuButton,
-    IonTitle,
-    IonContent,
-    IonCard,
-    IonCardHeader,
-    IonCardTitle,
-    IonCardContent,
-    IonSpinner,
-    IonList,
-    IonItem,
-    IonLabel,
-    IonBadge,
-    IonButton,
-    IonIcon
-  ]
 })
 export class SettlementsPage implements OnInit {
   settlements: any[] = [];
@@ -74,7 +33,7 @@ export class SettlementsPage implements OnInit {
   async loadSettlements() {
     this.loading = true;
     try {
-      const response = await this.apiService.getSettlements().toPromise();
+      const response = await firstValueFrom(this.apiService.getSettlements());
       if (response?.success) {
         // Backend returns { data: { settlements: [], pagination: {} } }
         this.settlements = (response.data as any).settlements || (response.data as any).data || [];
@@ -88,7 +47,7 @@ export class SettlementsPage implements OnInit {
 
   async loadPendingSettlements() {
     try {
-      const response = await this.apiService.getPendingSettlements().toPromise();
+      const response = await firstValueFrom(this.apiService.getPendingSettlements());
       if (response?.success) {
         this.pendingSettlements = response.data.settlements;
       }
@@ -107,12 +66,12 @@ export class SettlementsPage implements OnInit {
     await loading.present();
 
     try {
-      const response = await this.apiService.calculateSettlement({
+      const response = await firstValueFrom(this.apiService.calculateSettlement({
         pumpOwnerId: this.selectedPumpOwner,
         startDate: this.startDate,
         endDate: this.endDate,
         period: `${new Date(this.startDate).toLocaleDateString()} - ${new Date(this.endDate).toLocaleDateString()}`
-      }).toPromise();
+      }));
 
       if (response?.success) {
         this.calculation = response.data.calculation;
@@ -129,7 +88,7 @@ export class SettlementsPage implements OnInit {
     const loading = await this.loadingController.create({ message: 'Processing...' });
     await loading.present();
     try {
-      const response = await this.apiService.processSettlement(id).toPromise();
+      const response = await firstValueFrom(this.apiService.processSettlement(id));
       if (response?.success) {
         this.showToast('Settlement processing initiated', 'success');
         await this.loadSettlements();
@@ -174,7 +133,7 @@ export class SettlementsPage implements OnInit {
             const loading = await this.loadingController.create({ message: 'Completing...' });
             await loading.present();
             try {
-              const response = await this.apiService.completeSettlement(id, data).toPromise();
+              const response = await firstValueFrom(this.apiService.completeSettlement(id, data));
               if (response?.success) {
                 this.showToast('Settlement completed successfully', 'success');
                 await this.loadSettlements();

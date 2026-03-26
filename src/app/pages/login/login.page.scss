@@ -1,93 +1,216 @@
+// -----------------------------------------------------------------------------
+// Login screen — all styles for this page live here (no global/login rules elsewhere).
+// -----------------------------------------------------------------------------
+
+:host {
+  // Local design tokens (login only)
+  --login-bg-top: #dbeafe;
+  --login-bg-mid: #f1f5f9;
+  --login-bg-bottom: #f8fafc;
+  --login-card: #ffffff;
+  --login-text: #0f172a;
+  --login-muted: #64748b;
+  --login-border: #cbd5e1;
+  --login-border-focus: #0e2a47;
+  --login-accent: #f97316;
+  --login-accent-hover: #ea580c;
+  --login-toolbar-bg: #0e2a47;
+  --login-toolbar-fg: #ffffff;
+  --login-error: #dc2626;
+  --login-shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 12px 40px -12px rgba(14, 42, 71, 0.18);
+  --login-radius-lg: 16px;
+  --login-radius: 10px;
+  --login-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --login-heading: 'Space Grotesk', var(--login-font);
+
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 100%;
+  box-sizing: border-box;
+  font-family: var(--login-font);
+  color: var(--login-text);
+  background: linear-gradient(
+    160deg,
+    var(--login-bg-top) 0%,
+    var(--login-bg-mid) 42%,
+    var(--login-bg-bottom) 100%
+  );
+}
+
+.login-header-bar {
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.login-toolbar {
+  --background: var(--login-toolbar-bg);
+  --color: var(--login-toolbar-fg);
+  --border-width: 0;
+  min-height: 52px;
+}
+
+.login-toolbar-title {
+  font-family: var(--login-heading);
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: -0.02em;
+}
+
 .login-content {
-  --background: #ffffff;
+  --background: transparent;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --padding-start: 0;
+  --padding-end: 0;
+  flex: 1 1 auto;
+  min-height: 0;
+  position: relative;
+}
+
+.login-backdrop {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% -20%, rgba(14, 42, 71, 0.08), transparent 55%);
 }
 
 .login-container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  padding: clamp(1.25rem, 4vw, 2rem) 1.25rem 2.5rem;
+  box-sizing: border-box;
+  min-height: 100%;
   display: flex;
+  flex-direction: column;
   justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 20px;
-  background: #ffffff;
 }
 
 .login-card {
   width: 100%;
-  max-width: 400px;
-  background: #ffffff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 40px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background: var(--login-card);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: var(--login-radius-lg);
+  padding: clamp(1.5rem, 4vw, 2rem);
+  box-shadow: var(--login-shadow);
+  backdrop-filter: blur(8px);
 }
 
 .login-header {
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: 1.75rem;
 
   h1 {
-    font-size: 2rem;
-    font-weight: 600;
-    color: #000000;
-    margin: 0 0 8px 0;
+    font-family: var(--login-heading);
+    font-size: clamp(1.35rem, 3vw, 1.6rem);
+    font-weight: 700;
+    color: var(--login-text);
+    margin: 0 0 0.5rem;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
   }
 
   p {
-    color: #808080;
-    font-size: 0.875rem;
     margin: 0;
+    color: var(--login-muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
   }
 }
 
-.form-item {
-  margin-bottom: 16px;
-  --background: transparent;
-  --border-color: #e0e0e0;
-  --border-width: 1px;
-  --border-style: solid;
-  --border-radius: 4px;
-  --padding-start: 12px;
-  --padding-end: 12px;
-  --inner-padding-end: 0;
+.form-field {
+  margin-bottom: 0.25rem;
+
+  ion-input {
+    width: 100%;
+    --background: var(--login-card);
+    --color: var(--login-text);
+    --placeholder-color: var(--login-muted);
+    --border-color: var(--login-border);
+    --border-radius: var(--login-radius);
+    --border-width: 1.5px;
+    --padding-start: 14px;
+    --padding-end: 14px;
+    --padding-top: 12px;
+    --padding-bottom: 12px;
+    font-size: 1rem;
+    --highlight-color-focused: var(--login-border-focus);
+  }
 }
 
 .error-message {
-  color: #000000;
+  color: var(--login-error);
   font-size: 0.75rem;
-  margin-top: -12px;
-  margin-bottom: 12px;
-  padding-left: 12px;
+  margin: 0.25rem 0 0.75rem;
+  padding-left: 2px;
+  line-height: 1.35;
 }
 
-.login-button {
-  margin-top: 24px;
-  --background: #000000;
+// Native submit uses global .btn-primary; size/spacing live here (reliable vs ion-button shadow).
+.login-submit-btn {
+  width: 100%;
+  margin-top: 1.5rem;
+  min-height: 48px;
+  font-size: 1rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.35);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    opacity 0.15s ease;
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+}
+
+.login-submit-spinner {
+  width: 22px;
+  height: 22px;
   --color: #ffffff;
-  --border-radius: 4px;
-  height: 48px;
-  font-weight: 500;
-  text-transform: none;
 }
 
+// Dark mode (local tokens only)
 @media (prefers-color-scheme: dark) {
-  .login-content {
-    --background: #1a1a1a;
+  :host {
+    --login-bg-top: #0f172a;
+    --login-bg-mid: #0b1220;
+    --login-bg-bottom: #0b0f19;
+    --login-card: #1e293b;
+    --login-text: #f1f5f9;
+    --login-muted: #94a3b8;
+    --login-border: #475569;
+    --login-border-focus: #f97316;
+    --login-shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
   }
 
-  .login-container {
-    background: #1a1a1a;
+  .login-toolbar {
+    --background: #0a1628;
   }
 
   .login-card {
-    background: #2a2a2a;
-    border-color: #333333;
+    border-color: rgba(148, 163, 184, 0.2);
   }
 
-  .login-header h1 {
-    color: #ffffff;
+  .form-field ion-input {
+    --background: #0f172a;
+    --border-color: var(--login-border);
   }
 
-  .form-item {
-    --border-color: #333333;
+  .login-submit-btn {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  }
+}
+
+@media (max-width: 576px) {
+  .login-container {
+    justify-content: flex-start;
+    padding-top: 1.5rem;
+  }
+
+  .login-card {
+    padding: 1.35rem;
   }
 }

@@ -1,0 +1,17 @@
+{
+  "hosting": {
+    "public": "www",
+    "site": "admin-porttivo",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
